@@ -69,6 +69,21 @@ const QuizContainer = styled.div`
   }
 `;
 
+const QuestionContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0 2.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0 2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 1.5rem;
+  }
+`;
+
 const QuestionText = styled.div`
   font-size: 24px !important;
   font-family: "Kanit", sans-serif !important;
@@ -79,7 +94,6 @@ const QuestionText = styled.div`
   position: relative;
   animation: ${fadeIn} 0.4s ease-out;
   line-height: 1.4;
-  padding: 0 1rem;
   
   @media (max-width: 768px) {
     font-size: 20px !important;
@@ -89,7 +103,6 @@ const QuestionText = styled.div`
   @media (max-width: 480px) {
     font-size: 18px !important;
     margin-bottom: 1rem;
-    padding: 0 0.5rem;
   }
   
   &::after {
@@ -310,6 +323,48 @@ const NextButton = styled.button`
   }
 `;
 
+const SpeakerButton = styled.button`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9c27b0;
+  transition: all 0.3s ease;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    font-size: 1.3rem;
+    padding: 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    padding: 0.3rem;
+  }
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+    color: #7b1fa2;
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 const AppRiasecTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -322,6 +377,7 @@ const AppRiasecTest = () => {
   });
   const [currentSection, setCurrentSection] = useState('R');
   const sections = ['R', 'I', 'A', 'S', 'E', 'C'];
+  const [isReading, setIsReading] = useState(false);
 
   // Calculer le nombre total de questions RIASEC
   const totalQuestions = Object.values(RIASEC_QUESTIONS).reduce((acc, questions) => acc + questions.length, 0);
@@ -421,12 +477,51 @@ const AppRiasecTest = () => {
     setShowTimer(!showTimer);
   };
 
+  const readQuestion = () => {
+    if ('speechSynthesis' in window) {
+      // Arrêter toute lecture en cours
+      window.speechSynthesis.cancel();
+
+      const current = getCurrentQuestion();
+      const textToRead = current.question.text;
+      
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      
+      setIsReading(true);
+      
+      utterance.onend = () => {
+        setIsReading(false);
+      };
+
+      utterance.onerror = () => {
+        setIsReading(false);
+        toast.error('Erreur lors de la lecture vocale');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast.error('La synthèse vocale n\'est pas supportée par votre navigateur');
+    }
+  };
+
   const renderCurrentQuestion = () => {
     const current = getCurrentQuestion();
     return (
       <>
         <SectionTitle>Section {current.section}</SectionTitle>
-        <QuestionText>{current.question.text}</QuestionText>
+        <QuestionContainer>
+          <QuestionText>{current.question.text}</QuestionText>
+          <SpeakerButton 
+            onClick={readQuestion}
+            disabled={isReading}
+            title="Lire la question à voix haute"
+          >
+            {isReading ? '🔊' : '🔈'}
+          </SpeakerButton>
+        </QuestionContainer>
         <ScaleContainer>
           <SliderContainer>
             <Slider

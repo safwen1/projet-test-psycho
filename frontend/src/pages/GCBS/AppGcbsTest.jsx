@@ -487,6 +487,63 @@ const OptionText = styled.div`
   font-weight: ${props => props.$selected ? '600' : '400'};
 `;
 
+const QuestionContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0 2.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0 2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 1.5rem;
+  }
+`;
+
+const SpeakerButton = styled.button`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2196f3;
+  transition: all 0.3s ease;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    font-size: 1.3rem;
+    padding: 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    padding: 0.3rem;
+  }
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+    color: #1976d2;
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 const AppGcbsTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -500,6 +557,7 @@ const AppGcbsTest = () => {
   const [questionStartTimes, setQuestionStartTimes] = useState([Date.now()]);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
+  const [isReading, setIsReading] = useState(false);
 
   useEffect(() => {
     setQuestionStartTimes(prev => [...prev, Date.now()]);
@@ -754,23 +812,48 @@ const AppGcbsTest = () => {
     handleAnswer(value);
   };
 
+  const readQuestion = () => {
+    if ('speechSynthesis' in window) {
+      // Arrêter toute lecture en cours
+      window.speechSynthesis.cancel();
+
+      let textToRead = '';
+
+      if (currentSection === 'gcbs') {
+        const currentGcbsQuestion = gcbsQuestions[currentQuestion];
+        textToRead = `Choisissez entre les deux options suivantes : Option A, ${currentGcbsQuestion.optionA}, ou Option B, ${currentGcbsQuestion.optionB}`;
+      } else if (currentSection === 'tipi') {
+        const currentTipiQuestion = tipiQuestions[currentQuestion];
+        textToRead = currentTipiQuestion.question;
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      
+      setIsReading(true);
+      
+      utterance.onend = () => {
+        setIsReading(false);
+      };
+
+      utterance.onerror = () => {
+        setIsReading(false);
+        toast.error('Erreur lors de la lecture vocale');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast.error('La synthèse vocale n\'est pas supportée par votre navigateur');
+    }
+  };
+
   const renderCurrentSection = () => {
     if (currentSection === 'gcbs') {
-      return (
-        <>
-          <QuestionText>
-            {getCurrentQuestion().text || 'Choisissez entre les deux options :'}
-          </QuestionText>
-          {renderQuestion()}
-        </>
-      );
+      return renderQuestion();
     } else if (currentSection === 'tipi') {
-      return (
-        <>
-          <QuestionText>{getCurrentQuestion().text}</QuestionText>
-          {renderQuestion()}
-        </>
-      );
+      return renderQuestion();
     }
     return null;
   };
@@ -781,6 +864,16 @@ const AppGcbsTest = () => {
         const currentGcbsQuestion = gcbsQuestions[currentQuestion];
         return (
           <div>
+            <QuestionContainer>
+              <QuestionText>Choisissez entre les deux options :</QuestionText>
+              <SpeakerButton 
+                onClick={readQuestion}
+                disabled={isReading}
+                title="Lire la question à voix haute"
+              >
+                {isReading ? '🔊' : '🔈'}
+              </SpeakerButton>
+            </QuestionContainer>
             <OptionContainer>
               <OptionText 
                 $align="left" 
@@ -811,7 +904,16 @@ const AppGcbsTest = () => {
         const currentTipiQuestion = tipiQuestions[currentQuestion];
         return (
           <div>
-            <QuestionText>{currentTipiQuestion.question}</QuestionText>
+            <QuestionContainer>
+              <QuestionText>{currentTipiQuestion.question}</QuestionText>
+              <SpeakerButton 
+                onClick={readQuestion}
+                disabled={isReading}
+                title="Lire la question à voix haute"
+              >
+                {isReading ? '🔊' : '🔈'}
+              </SpeakerButton>
+            </QuestionContainer>
             <SliderContainer>
               <CustomSlider
                 value={tipiAnswers[currentQuestion]?.answer || 50}

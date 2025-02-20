@@ -364,6 +364,63 @@ const SliderLabel = styled(Typography)`
   }
 `;
 
+const QuestionContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0 2.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0 2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 1.5rem;
+  }
+`;
+
+const SpeakerButton = styled.button`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4caf50;
+  transition: all 0.3s ease;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    font-size: 1.3rem;
+    padding: 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    padding: 0.3rem;
+  }
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+    color: #388e3c;
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 const marks = [
   { value: 1, label: 'Tout à fait en désaccord' },
   { value: 2, label: '' },
@@ -392,6 +449,7 @@ const AppAmbiTest = () => {
     }
     return indices;
   });
+  const [isReading, setIsReading] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -535,6 +593,35 @@ const AppAmbiTest = () => {
     setShowTimer(!showTimer);
   };
 
+  const readQuestion = () => {
+    if ('speechSynthesis' in window) {
+      // Arrêter toute lecture en cours
+      window.speechSynthesis.cancel();
+
+      const textToRead = ambiQuestions[randomQuestionOrder[currentQuestion]].question;
+      
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      
+      setIsReading(true);
+      
+      utterance.onend = () => {
+        setIsReading(false);
+      };
+
+      utterance.onerror = () => {
+        setIsReading(false);
+        toast.error('Erreur lors de la lecture vocale');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast.error('La synthèse vocale n\'est pas supportée par votre navigateur');
+    }
+  };
+
   return (
     <>
       <GlobalStyle />
@@ -562,9 +649,18 @@ const AppAmbiTest = () => {
           </ProgressText>
         </ProgressContainer>
 
-        <QuestionText>
-          {ambiQuestions[randomQuestionOrder[currentQuestion]].question}
-        </QuestionText>
+        <QuestionContainer>
+          <QuestionText>
+            {ambiQuestions[randomQuestionOrder[currentQuestion]].question}
+          </QuestionText>
+          <SpeakerButton 
+            onClick={readQuestion}
+            disabled={isReading}
+            title="Lire la question à voix haute"
+          >
+            {isReading ? '🔊' : '🔈'}
+          </SpeakerButton>
+        </QuestionContainer>
 
         <SliderContainer>
           <Slider
