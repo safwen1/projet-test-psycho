@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { LinearProgress, Slider, Box, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,7 +9,6 @@ import {
   gcbsScale,
   tipiQuestions,
   tipiScale,
-  vocabularyList
 } from '../../constants/GCBS/data';
 import styleSensei from '../../images/style-sensei.png';
 import { useUserContext } from '../../context/userContext';
@@ -300,6 +299,12 @@ const TimerContainer = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 
   @media (max-width: 768px) {
     top: -35px;
@@ -484,18 +489,17 @@ const OptionText = styled.div`
 
 const AppGcbsTest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userId, token, projectTaskId } = useUserContext();
   const [currentSection, setCurrentSection] = useState('gcbs');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [gcbsAnswers, setGcbsAnswers] = useState([]);
   const [tipiAnswers, setTipiAnswers] = useState([]);
-  const [vocabularyAnswers, setVocabularyAnswers] = useState(
-    vocabularyList.map(word => ({ wordId: word.id, checked: false }))
-  );
   const [testStartTime] = useState(Date.now());
   const [sectionStartTime, setSectionStartTime] = useState(Date.now());
   const [questionStartTimes, setQuestionStartTimes] = useState([Date.now()]);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
 
   useEffect(() => {
     setQuestionStartTimes(prev => [...prev, Date.now()]);
@@ -516,15 +520,13 @@ const AppGcbsTest = () => {
         return gcbsQuestions.length;
       case 'tipi':
         return tipiQuestions.length;
-      case 'vocabulary':
-        return 1;
       default:
         return 0;
     }
   };
 
   const getProgress = () => {
-    const totalQuestions = gcbsQuestions.length + tipiQuestions.length + 1; // +1 pour la section vocabulaire
+    const totalQuestions = gcbsQuestions.length + tipiQuestions.length;
     let completedQuestions = 0;
 
     switch (currentSection) {
@@ -533,9 +535,6 @@ const AppGcbsTest = () => {
         break;
       case 'tipi':
         completedQuestions = gcbsQuestions.length + currentQuestion;
-        break;
-      case 'vocabulary':
-        completedQuestions = gcbsQuestions.length + tipiQuestions.length;
         break;
       default:
         completedQuestions = 0;
@@ -570,19 +569,6 @@ const AppGcbsTest = () => {
         timeSpent
       };
       setTipiAnswers(newAnswers);
-    }
-  };
-
-  const handleVocabularyToggle = (wordId) => {
-    const newVocabularyAnswers = [...vocabularyAnswers];
-    const index = newVocabularyAnswers.findIndex(answer => answer.wordId === wordId);
-    
-    if (index !== -1) {
-      newVocabularyAnswers[index] = {
-        ...newVocabularyAnswers[index],
-        checked: !newVocabularyAnswers[index].checked
-      };
-      setVocabularyAnswers(newVocabularyAnswers);
     }
   };
 
@@ -637,9 +623,6 @@ const AppGcbsTest = () => {
     } else if (currentSection === 'tipi') {
       setCurrentSection('gcbs');
       setCurrentQuestion(gcbsQuestions.length - 1);
-    } else if (currentSection === 'vocabulary') {
-      setCurrentSection('tipi');
-      setCurrentQuestion(tipiQuestions.length - 1);
     }
   };
 
@@ -678,10 +661,6 @@ const AppGcbsTest = () => {
               ...Object.fromEntries(results.tipiAnswers.map(answer => [
                 tipiQuestions.find(q => q.id === answer.questionId).question,
                 answer.answer
-              ])),
-              ...Object.fromEntries(results.vocabularyAnswers.map(answer => [
-                vocabularyList.find(w => w.id === answer.wordId).word,
-                answer.checked ? 1 : 0
               ]))
             }
           },
@@ -715,10 +694,6 @@ const AppGcbsTest = () => {
     } else if (currentSection === 'tipi' && currentQuestion + 1 < tipiQuestions.length) {
       setCurrentQuestion(currentQuestion + 1);
     } else if (currentSection === 'tipi') {
-      setCurrentSection('vocabulary');
-      setCurrentQuestion(0);
-      setSectionStartTime(Date.now());
-    } else if (currentSection === 'vocabulary') {
       const { gcbsScores, tipiScores } = calculateScores();
       const testDuration = Math.round((Date.now() - testStartTime) / 1000);
 
@@ -728,7 +703,6 @@ const AppGcbsTest = () => {
           gcbsAnswers,
           tipiScores,
           tipiAnswers,
-          vocabularyAnswers,
           timings: {
             introElapse: Math.round((sectionStartTime - testStartTime) / 1000),
             testElapse: testDuration,
@@ -850,26 +824,6 @@ const AppGcbsTest = () => {
           </div>
         );
 
-      case 'vocabulary':
-        return (
-          <VocabularyGrid>
-            {vocabularyList.map((word) => (
-              <VocabularyItem
-                key={word.id}
-                $checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
-                onClick={() => handleVocabularyToggle(word.id)}
-              >
-                <input
-                  type="checkbox"
-                  checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
-                  onChange={() => {}}
-                />
-                {word.word}
-              </VocabularyItem>
-            ))}
-          </VocabularyGrid>
-        );
-
       default:
         return null;
     }
@@ -881,8 +835,6 @@ const AppGcbsTest = () => {
         return gcbsQuestions[currentQuestion];
       case 'tipi':
         return tipiQuestions[currentQuestion];
-      case 'vocabulary':
-        return vocabularyList[0];
       default:
         return null;
     }
@@ -894,19 +846,21 @@ const AppGcbsTest = () => {
         return !gcbsAnswers[currentQuestion];
       case 'tipi':
         return !tipiAnswers[currentQuestion];
-      case 'vocabulary':
-        return false;
       default:
         return true;
     }
+  };
+
+  const handleTimerClick = () => {
+    setShowTimer(!showTimer);
   };
 
   return (
     <>
       <GlobalStyle />
       <TestContainer>
-        <TimerContainer>
-          {formatTime(testStartTime)}
+        <TimerContainer onClick={handleTimerClick}>
+          {showTimer ? formatTime(testStartTime) : ''}
         </TimerContainer>
 
         <ProgressContainer>
@@ -929,7 +883,7 @@ const AppGcbsTest = () => {
             disabled={isNextDisabled()}
             onClick={handleNext}
           >
-            {currentSection === 'vocabulary' ? 'Terminer' : 'Suivant'}
+            {currentSection === 'tipi' ? 'Terminer' : 'Suivant'}
           </NextButton>
         </NavigationButtons>
 

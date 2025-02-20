@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
+import { Switch, FormControlLabel } from '@mui/material';
 
 const PageContainer = styled.div`
   background-color: #e3f2fd;
@@ -224,11 +225,23 @@ const ListItem = styled.li`
   }
 `;
 
+const TimerSwitch = styled(FormControlLabel)`
+  margin-top: 20px;
+  margin-bottom: 20px;
+  .MuiSwitch-track {
+    background-color: #2196f3 !important;
+  }
+  .MuiSwitch-switchBase.Mui-checked {
+    color: #2196f3 !important;
+  }
+`;
+
 const IntroGcbs = () => {
   const navigate = useNavigate();
+  const [showTimer, setShowTimer] = useState(true);
 
   const handleStartTest = () => {
-    navigate('/gcbs/test');
+    navigate('/gcbs/test', { state: { showTimer } });
   };
 
   return (
@@ -246,7 +259,6 @@ const IntroGcbs = () => {
             <List>
               <ListItem>Partie I : Test principal GCBS (30 questions)</ListItem>
               <ListItem>Partie II : Enquête de personnalité TIPI (10 questions)</ListItem>
-              <ListItem>Partie III : Checklist de vocabulaire (1 question avec 16 mots)</ListItem>
             </List>
           </Section>
 
@@ -263,16 +275,28 @@ const IntroGcbs = () => {
           <Section>
             <SectionTitle>Durée et Instructions</SectionTitle>
             <Description>
-              Durée moyenne : 15-20 minutes
+              Durée moyenne : 10-15 minutes
               <br/><br/>
               Pour chaque question du test principal, vous devrez indiquer votre préférence entre deux options sur une échelle de 1 à 5.
               Pour l'enquête de personnalité, vous évaluerez des affirmations sur une échelle de 1 à 7.
-              Pour la checklist de vocabulaire, cochez uniquement les mots dont vous êtes sûr(e) de connaître la définition.
               <br/><br/>
               Répondez de manière spontanée et honnête. Il n'y a pas de bonnes ou mauvaises réponses.
             </Description>
+            <Description style={{ color: '#666', fontSize: '0.9rem', fontStyle: 'italic' }}>
+              ℹ️ Note : Le timer est uniquement indicatif et n'a aucune incidence sur le test. Vous pouvez l'afficher ou le masquer à tout moment en cliquant dessus pendant le test.
+            </Description>
           </Section>
 
+          <TimerSwitch
+            control={
+              <Switch
+                checked={showTimer}
+                onChange={(e) => setShowTimer(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Afficher le timer pendant le test"
+          />
           <StartButton onClick={handleStartTest}>
             Commencer le test
           </StartButton>

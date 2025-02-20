@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
+import { Switch, FormControlLabel } from '@mui/material';
 
 const PageContainer = styled.div`
   background-color: #e8f5e9;
@@ -177,11 +178,23 @@ const FooterBar = styled.div`
   left: 0;
 `;
 
+const TimerSwitch = styled(FormControlLabel)`
+  margin-top: 20px;
+  margin-bottom: 20px;
+  .MuiSwitch-track {
+    background-color: #4caf50 !important;
+  }
+  .MuiSwitch-switchBase.Mui-checked {
+    color: #4caf50 !important;
+  }
+`;
+
 const IntroAmbi = () => {
   const navigate = useNavigate();
+  const [showTimer, setShowTimer] = useState(true);
 
   const handleStartTest = () => {
-    navigate('/ambi/test');
+    navigate('/ambi/test', { state: { showTimer } });
   };
 
   return (
@@ -222,6 +235,19 @@ const IntroAmbi = () => {
             <br/><br/>
             À la fin du test, vous recevrez une analyse détaillée de votre profil de personnalité AMBI.
           </Description>
+          <Description style={{ color: '#666', fontSize: '0.9rem', fontStyle: 'italic' }}>
+            ℹ️ Note : Le timer est uniquement indicatif et n'a aucune incidence sur le test. Vous pouvez l'afficher ou le masquer à tout moment en cliquant dessus pendant le test.
+          </Description>
+          <TimerSwitch
+            control={
+              <Switch
+                checked={showTimer}
+                onChange={(e) => setShowTimer(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Afficher le timer pendant le test"
+          />
           <StartButton onClick={handleStartTest}>
             Commencer le test
           </StartButton>

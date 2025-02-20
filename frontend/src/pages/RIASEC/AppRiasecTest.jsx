@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { LinearProgress, Box, Typography, Slider } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -149,6 +149,12 @@ const TimerContainer = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 
   @media (max-width: 768px) {
     top: -35px;
@@ -306,9 +312,11 @@ const NextButton = styled.button`
 
 const AppRiasecTest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
   const [responses, setResponses] = useState({
     riasec: {},
   });
@@ -409,6 +417,10 @@ const AppRiasecTest = () => {
     }
   };
 
+  const handleTimerClick = () => {
+    setShowTimer(!showTimer);
+  };
+
   const renderCurrentQuestion = () => {
     const current = getCurrentQuestion();
     return (
@@ -471,8 +483,8 @@ const AppRiasecTest = () => {
     <>
       <GlobalStyle />
       <QuizContainer>
-        <TimerContainer>
-          {formatTime(elapsedTime)}
+        <TimerContainer onClick={handleTimerClick}>
+          {showTimer ? formatTime(elapsedTime) : ''}
         </TimerContainer>
 
         <ProgressContainer>

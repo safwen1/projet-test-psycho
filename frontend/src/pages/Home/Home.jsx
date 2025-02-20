@@ -150,8 +150,8 @@ const tests = [
     description: 'Generic Conspiracist Beliefs Scale',
     icon: GcbsIcon,
     path: '/gcbs',
-    duration: '15-20 minutes',
-    questionCount: 41,
+    duration: '10-15 minutes',
+    questionCount: 40,
     accentColor: '#2196f3',
     category: 'cognitive'
   },

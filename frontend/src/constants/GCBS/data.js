@@ -295,24 +295,4 @@ export const tipiScale = [
   { value: 5, label: "Légèrement d'accord" },
   { value: 6, label: "Plutôt d'accord" },
   { value: 7, label: "Tout à fait d'accord" }
-];
-
-// Liste de vocabulaire
-export const vocabularyList = [
-  { id: "VCL1", word: "bateau", isReal: true },
-  { id: "VCL2", word: "incohérent", isReal: true },
-  { id: "VCL3", word: "pâle", isReal: true },
-  { id: "VCL4", word: "robot", isReal: true },
-  { id: "VCL5", word: "audible", isReal: true },
-  { id: "VCL6", word: "cuivocal", isReal: false },
-  { id: "VCL7", word: "paucité", isReal: true },
-  { id: "VCL8", word: "épistémologie", isReal: true },
-  { id: "VCL9", word: "florted", isReal: false },
-  { id: "VCL10", word: "décider", isReal: true },
-  { id: "VCL11", word: "pastiche", isReal: true },
-  { id: "VCL12", word: "verdid", isReal: false },
-  { id: "VCL13", word: "abyssal", isReal: true },
-  { id: "VCL14", word: "lucide", isReal: true },
-  { id: "VCL15", word: "trahir", isReal: true },
-  { id: "VCL16", word: "drôle", isReal: true }
 ]; 

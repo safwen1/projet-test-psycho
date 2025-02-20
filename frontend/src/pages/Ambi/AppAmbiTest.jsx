@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { LinearProgress, Slider, Box, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -294,6 +294,12 @@ const TimerContainer = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 
   @media (max-width: 768px) {
     top: -35px;
@@ -370,12 +376,14 @@ const marks = [
 
 const AppAmbiTest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userId, token, projectTaskId } = useUserContext();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [questionStartTimes, setQuestionStartTimes] = useState([Date.now()]);
   const [testStartTime] = useState(Date.now());
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
   const [randomQuestionOrder] = useState(() => {
     const indices = Array.from({ length: ambiQuestions.length }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
@@ -523,12 +531,16 @@ const AppAmbiTest = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const handleTimerClick = () => {
+    setShowTimer(!showTimer);
+  };
+
   return (
     <>
       <GlobalStyle />
       <QuizContainer>
-        <TimerContainer>
-          {formatTime(testStartTime)}
+        <TimerContainer onClick={handleTimerClick}>
+          {showTimer ? formatTime(testStartTime) : ''}
         </TimerContainer>
 
         <ProgressContainer>
