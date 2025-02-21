@@ -221,19 +221,19 @@ const IntroRiasec = () => {
             <br/>
             Le test est divisé en 4 thèmes :
             <br/>
-            • Intérêts - Activités : Vos préférences pour différentes activités
+            • Intérêts - Activités : Vos préférences pour différentes activités (15 questions par dimension)
             <br/>
-            • Intérêts - Occupations : Votre attrait pour différentes professions
+            • Intérêts - Occupations : Votre attrait pour différentes professions (15 questions par dimension)
             <br/>
-            • Aptitudes : Vos compétences et capacités
+            • Aptitudes : Vos compétences et capacités (15 questions par dimension)
             <br/>
-            • Personnalité : Vos traits de caractère
+            • Personnalité : Vos traits de caractère (15 questions par dimension)
             <br/><br/>
-            Pour chaque thème, vous devrez évaluer 5 propositions par dimension RIASEC.
+            Pour chaque thème, vous devrez évaluer 15 propositions par dimension RIASEC.
             <br/>
-            Cochez toutes les propositions qui vous correspondent.
+            Pour chaque proposition, indiquez si elle vous correspond (Oui) ou non (Non).
             <br/><br/>
-            Durée moyenne : 15-20 minutes
+            Durée moyenne : 45-50 minutes
             <br/><br/>
             Conseils :
             <br/>
@@ -241,9 +241,9 @@ const IntroRiasec = () => {
             <br/>
             • Il n'y a pas de bonnes ou mauvaises réponses
             <br/>
-            • Basez-vous sur vos préférences réelles
+            • Basez-vous sur vos préférences réelles, pas sur ce que vous pensez devoir répondre
             <br/>
-            • Ne vous limitez pas dans vos choix, cochez autant de propositions que vous le souhaitez
+            • Prenez le temps de bien lire chaque proposition
           </Description>
           <Description style={{ color: '#666', fontSize: '0.9rem', fontStyle: 'italic' }}>
             ℹ️ Note : Le timer est uniquement indicatif et n'a aucune incidence sur le test. Vous pouvez l'afficher ou le masquer à tout moment en cliquant dessus pendant le test.
