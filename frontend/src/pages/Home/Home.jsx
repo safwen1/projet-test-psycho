@@ -147,7 +147,7 @@ const tests = [
   {
     id: 'gcbs',
     title: 'Test GCBS',
-    description: 'Generic Conspiracist Beliefs Scale',
+    description: 'Évaluez votre tendance à adhérer à différentes théories explicatives à travers 40 questions soigneusement sélectionnées. Le GCBS (Generic Conspiracist Beliefs Scale) est un outil scientifique validé qui mesure les différentes dimensions de la pensée critique et analytique. Durée : 10-15 minutes.',
     icon: GcbsIcon,
     path: '/gcbs',
     duration: '10-15 minutes',
@@ -158,7 +158,7 @@ const tests = [
   {
     id: 'ambi',
     title: 'Test Ambi',
-    description: 'Test d\'ambiguïté',
+    description: 'Explorez votre rapport à l\'ambiguïté à travers 181 questions variées. Ce test évalue votre capacité à gérer les situations incertaines et votre flexibilité cognitive face à différents scénarios. Une évaluation complète de votre tolérance à l\'ambiguïté dans divers contextes. Durée : 10-15 minutes.',
     icon: AmbiIcon,
     path: '/ambi',
     duration: '10-15 minutes',
