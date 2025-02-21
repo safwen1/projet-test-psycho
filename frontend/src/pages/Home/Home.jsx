@@ -172,8 +172,8 @@ const tests = [
     description: 'Test d\'intérêts professionnels',
     icon: RiasecIcon,
     path: '/riasec',
-    duration: '10-15 minutes',
-    questionCount: 48,
+    duration: '15-20 minutes',
+    questionCount: 120,
     accentColor: '#9c27b0',
     category: 'personality'
   }

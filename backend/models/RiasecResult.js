@@ -10,23 +10,52 @@ const riasecResultSchema = new mongoose.Schema({
       E: Number,
       C: Number
     },
+    themes: {
+      theme1: {
+        R: Number,
+        I: Number,
+        A: Number,
+        S: Number,
+        E: Number,
+        C: Number
+      },
+      theme2: {
+        R: Number,
+        I: Number,
+        A: Number,
+        S: Number,
+        E: Number,
+        C: Number
+      },
+      theme3: {
+        R: Number,
+        I: Number,
+        A: Number,
+        S: Number,
+        E: Number,
+        C: Number
+      },
+      theme4: {
+        R: Number,
+        I: Number,
+        A: Number,
+        S: Number,
+        E: Number,
+        C: Number
+      }
+    },
+    predominant: [String],
     userAnswers: {
       type: Map,
-      of: Number,
-      required: true
+      of: {
+        type: Map,
+        of: [String]
+      }
     }
   },
   metadata: {
-    startTime: {
-      type: Date,
-      required: true
-    },
-    endTime: {
-      type: Date,
-      required: true
-    },
     duration: {
-      type: Number,
+      type: String,
       required: true
     }
   }

@@ -219,11 +219,21 @@ const IntroRiasec = () => {
             <br/><br/>
             Structure du test :
             <br/>
-            • 48 questions (8 questions par dimension)
+            Le test est divisé en 4 thèmes :
             <br/>
-            • Échelle de réponse : 1 (N'aime pas) à 5 (Aime beaucoup)
+            • Intérêts - Activités : Vos préférences pour différentes activités
+            <br/>
+            • Intérêts - Occupations : Votre attrait pour différentes professions
+            <br/>
+            • Aptitudes : Vos compétences et capacités
+            <br/>
+            • Personnalité : Vos traits de caractère
             <br/><br/>
-            Durée moyenne : 10-15 minutes
+            Pour chaque thème, vous devrez évaluer 5 propositions par dimension RIASEC.
+            <br/>
+            Cochez toutes les propositions qui vous correspondent.
+            <br/><br/>
+            Durée moyenne : 15-20 minutes
             <br/><br/>
             Conseils :
             <br/>
@@ -231,7 +241,9 @@ const IntroRiasec = () => {
             <br/>
             • Il n'y a pas de bonnes ou mauvaises réponses
             <br/>
-            • Basez-vous sur vos préférences réelles plutôt que sur vos compétences
+            • Basez-vous sur vos préférences réelles
+            <br/>
+            • Ne vous limitez pas dans vos choix, cochez autant de propositions que vous le souhaitez
           </Description>
           <Description style={{ color: '#666', fontSize: '0.9rem', fontStyle: 'italic' }}>
             ℹ️ Note : Le timer est uniquement indicatif et n'a aucune incidence sur le test. Vous pouvez l'afficher ou le masquer à tout moment en cliquant dessus pendant le test.
@@ -250,8 +262,8 @@ const IntroRiasec = () => {
             Commencer le test
           </StartButton>
         </LeftSection>
-        <UserImage src={userImage} alt="Illustration" />
-        <SenseiImage src={senseiStyle} alt="Illustration" />
+        <UserImage src={userImage} alt="User illustration" />
+        <SenseiImage src={senseiStyle} alt="Style Sensei" />
       </Container>
       <FooterBar />
     </PageContainer>

@@ -1,65 +1,197 @@
 export const RIASEC_QUESTIONS = {
-  R: [
-    { id: 'R1', text: 'Tester la qualité des pièces avant expédition' },
-    { id: 'R2', text: 'Poser des briques ou des carreaux' },
-    { id: 'R3', text: 'Travailler sur une plate-forme pétrolière en mer' },
-    { id: 'R4', text: 'Assembler des composants électroniques' },
-    { id: 'R5', text: 'Faire fonctionner une machine à meuler dans une usine' },
-    { id: 'R6', text: 'Réparer un robinet défectueux' },
-    { id: 'R7', text: 'Assembler des produits dans une usine' },
-    { id: 'R8', text: 'Installer des revêtements de sol dans des maisons' }
-  ],
-  I: [
-    { id: 'I1', text: 'Étudier la structure du corps humain' },
-    { id: 'I2', text: 'Étudier le comportement animal' },
-    { id: 'I3', text: 'Mener des recherches sur les plantes ou les animaux' },
-    { id: 'I4', text: 'Développer un nouveau traitement ou une nouvelle procédure médicale' },
-    { id: 'I5', text: 'Effectuer des recherches biologiques' },
-    { id: 'I6', text: 'Étudier les baleines et d\'autres formes de vie marine' },
-    { id: 'I7', text: 'Travailler dans un laboratoire de biologie' },
-    { id: 'I8', text: 'Réaliser une cartographie du fond océanique' }
-  ],
-  A: [
-    { id: 'A1', text: 'Diriger une chorale' },
-    { id: 'A2', text: 'Mettre en scène une pièce de théâtre' },
-    { id: 'A3', text: 'Concevoir des illustrations pour des magazines' },
-    { id: 'A4', text: 'Composer une chanson' },
-    { id: 'A5', text: 'Écrire des livres ou des pièces de théâtre' },
-    { id: 'A6', text: 'Jouer d\'un instrument de musique' },
-    { id: 'A7', text: 'Réaliser des cascades pour un film ou une émission de télévision' },
-    { id: 'A8', text: 'Concevoir des décors pour des pièces de théâtre' }
-  ],
-  S: [
-    { id: 'S1', text: 'Donner des conseils d\'orientation professionnelle' },
-    { id: 'S2', text: 'Faire du bénévolat dans une organisation à but non lucratif' },
-    { id: 'S3', text: 'Aider des personnes ayant des problèmes d\'addiction' },
-    { id: 'S4', text: 'Enseigner un programme d\'exercices à une personne' },
-    { id: 'S5', text: 'Aider des personnes confrontées à des problèmes familiaux' },
-    { id: 'S6', text: 'Superviser les activités d\'enfants dans un camp' },
-    { id: 'S7', text: 'Apprendre aux enfants à lire' },
-    { id: 'S8', text: 'Assister des personnes âgées dans leurs activités quotidiennes' }
-  ],
-  E: [
-    { id: 'E1', text: 'Vendre des franchises de restaurants à des particuliers' },
-    { id: 'E2', text: 'Vendre des marchandises dans un grand magasin' },
-    { id: 'E3', text: 'Gérer les opérations d\'un hôtel' },
-    { id: 'E4', text: 'Exploiter un salon de beauté ou un barbier' },
-    { id: 'E5', text: 'Diriger un département au sein d\'une grande entreprise' },
-    { id: 'E6', text: 'Gérer une boutique de vêtements' },
-    { id: 'E7', text: 'Vendre des maisons' },
-    { id: 'E8', text: 'Diriger un magasin de jouets' }
-  ],
-  C: [
-    { id: 'C1', text: 'Générer les chèques de paie mensuels dans un bureau' },
-    { id: 'C2', text: 'Inventorier des fournitures à l\'aide d\'un ordinateur portable' },
-    { id: 'C3', text: 'Utiliser un logiciel pour générer des factures clients' },
-    { id: 'C4', text: 'Gérer les dossiers des employés' },
-    { id: 'C5', text: 'Calculer et enregistrer des données statistiques et numériques' },
-    { id: 'C6', text: 'Utiliser une calculatrice' },
-    { id: 'C7', text: 'Gérer les transactions bancaires des clients' },
-    { id: 'C8', text: 'Tenir les registres d\'expédition et de réception' }
-  ]
+  interests_activities: {
+    R: [
+      { id: 'R1_IA', text: 'Réparer des objets mécaniques' },
+      { id: 'R2_IA', text: 'Travailler avec des outils et des machines' },
+      { id: 'R3_IA', text: 'Construire des objets' },
+      { id: 'R4_IA', text: 'Faire du jardinage' },
+      { id: 'R5_IA', text: 'Conduire des véhicules ou des engins' }
+    ],
+    I: [
+      { id: 'I1_IA', text: 'Faire des expériences scientifiques' },
+      { id: 'I2_IA', text: 'Résoudre des problèmes mathématiques' },
+      { id: 'I3_IA', text: 'Analyser des données' },
+      { id: 'I4_IA', text: 'Étudier les phénomènes naturels' },
+      { id: 'I5_IA', text: 'Faire de la recherche' }
+    ],
+    A: [
+      { id: 'A1_IA', text: 'Dessiner ou peindre' },
+      { id: 'A2_IA', text: 'Jouer d\'un instrument de musique' },
+      { id: 'A3_IA', text: 'Prendre des photos artistiques' },
+      { id: 'A4_IA', text: 'Créer des objets décoratifs' },
+      { id: 'A5_IA', text: 'Écrire des histoires ou des poèmes' }
+    ],
+    S: [
+      { id: 'S1_IA', text: 'Aider les autres' },
+      { id: 'S2_IA', text: 'Enseigner ou former' },
+      { id: 'S3_IA', text: 'Soigner des personnes' },
+      { id: 'S4_IA', text: 'Participer à des activités de groupe' },
+      { id: 'S5_IA', text: 'Organiser des événements sociaux' }
+    ],
+    E: [
+      { id: 'E1_IA', text: 'Diriger une équipe' },
+      { id: 'E2_IA', text: 'Vendre des produits ou services' },
+      { id: 'E3_IA', text: 'Négocier des accords' },
+      { id: 'E4_IA', text: 'Parler en public' },
+      { id: 'E5_IA', text: 'Organiser des projets' }
+    ],
+    C: [
+      { id: 'C1_IA', text: 'Classer des documents' },
+      { id: 'C2_IA', text: 'Tenir des registres précis' },
+      { id: 'C3_IA', text: 'Suivre des procédures détaillées' },
+      { id: 'C4_IA', text: 'Travailler avec des chiffres' },
+      { id: 'C5_IA', text: 'Organiser des fichiers' }
+    ]
+  },
+  interests_occupations: {
+    R: [
+      { id: 'R1_IO', text: 'Mécanicien' },
+      { id: 'R2_IO', text: 'Électricien' },
+      { id: 'R3_IO', text: 'Charpentier' },
+      { id: 'R4_IO', text: 'Agriculteur' },
+      { id: 'R5_IO', text: 'Ingénieur en construction' }
+    ],
+    I: [
+      { id: 'I1_IO', text: 'Chercheur scientifique' },
+      { id: 'I2_IO', text: 'Mathématicien' },
+      { id: 'I3_IO', text: 'Biologiste' },
+      { id: 'I4_IO', text: 'Physicien' },
+      { id: 'I5_IO', text: 'Analyste de données' }
+    ],
+    A: [
+      { id: 'A1_IO', text: 'Artiste' },
+      { id: 'A2_IO', text: 'Musicien' },
+      { id: 'A3_IO', text: 'Photographe' },
+      { id: 'A4_IO', text: 'Designer' },
+      { id: 'A5_IO', text: 'Écrivain' }
+    ],
+    S: [
+      { id: 'S1_IO', text: 'Enseignant' },
+      { id: 'S2_IO', text: 'Conseiller' },
+      { id: 'S3_IO', text: 'Infirmier' },
+      { id: 'S4_IO', text: 'Travailleur social' },
+      { id: 'S5_IO', text: 'Psychologue' }
+    ],
+    E: [
+      { id: 'E1_IO', text: 'Chef d\'entreprise' },
+      { id: 'E2_IO', text: 'Commercial' },
+      { id: 'E3_IO', text: 'Manager' },
+      { id: 'E4_IO', text: 'Agent immobilier' },
+      { id: 'E5_IO', text: 'Directeur marketing' }
+    ],
+    C: [
+      { id: 'C1_IO', text: 'Comptable' },
+      { id: 'C2_IO', text: 'Secrétaire' },
+      { id: 'C3_IO', text: 'Assistant administratif' },
+      { id: 'C4_IO', text: 'Analyste financier' },
+      { id: 'C5_IO', text: 'Gestionnaire de base de données' }
+    ]
+  },
+  aptitudes: {
+    R: [
+      { id: 'R1_AP', text: 'Utiliser des outils avec précision' },
+      { id: 'R2_AP', text: 'Réparer des équipements' },
+      { id: 'R3_AP', text: 'Manipuler des objets avec dextérité' },
+      { id: 'R4_AP', text: 'Comprendre le fonctionnement des machines' },
+      { id: 'R5_AP', text: 'Résoudre des problèmes techniques' }
+    ],
+    I: [
+      { id: 'I1_AP', text: 'Analyser des données complexes' },
+      { id: 'I2_AP', text: 'Résoudre des problèmes logiques' },
+      { id: 'I3_AP', text: 'Mener des recherches' },
+      { id: 'I4_AP', text: 'Comprendre des théories scientifiques' },
+      { id: 'I5_AP', text: 'Interpréter des résultats d\'expériences' }
+    ],
+    A: [
+      { id: 'A1_AP', text: 'Créer des œuvres originales' },
+      { id: 'A2_AP', text: 'Avoir le sens du rythme et de la mélodie' },
+      { id: 'A3_AP', text: 'Maîtriser les techniques artistiques' },
+      { id: 'A4_AP', text: 'Avoir un bon sens esthétique' },
+      { id: 'A5_AP', text: 'Imaginer des concepts créatifs' }
+    ],
+    S: [
+      { id: 'S1_AP', text: 'Communiquer efficacement' },
+      { id: 'S2_AP', text: 'Comprendre les besoins des autres' },
+      { id: 'S3_AP', text: 'Résoudre des conflits' },
+      { id: 'S4_AP', text: 'Travailler en équipe' },
+      { id: 'S5_AP', text: 'Faire preuve d\'empathie' }
+    ],
+    E: [
+      { id: 'E1_AP', text: 'Diriger et motiver une équipe' },
+      { id: 'E2_AP', text: 'Persuader et convaincre' },
+      { id: 'E3_AP', text: 'Prendre des décisions' },
+      { id: 'E4_AP', text: 'Gérer des projets' },
+      { id: 'E5_AP', text: 'Négocier efficacement' }
+    ],
+    C: [
+      { id: 'C1_AP', text: 'Organiser méthodiquement' },
+      { id: 'C2_AP', text: 'Être précis et minutieux' },
+      { id: 'C3_AP', text: 'Suivre des instructions détaillées' },
+      { id: 'C4_AP', text: 'Gérer des données avec exactitude' },
+      { id: 'C5_AP', text: 'Maintenir des registres à jour' }
+    ]
+  },
+  personnalite: {
+    R: [
+      { id: 'R1_PE', text: 'Je suis une personne pratique' },
+      { id: 'R2_PE', text: 'Je préfère les activités concrètes' },
+      { id: 'R3_PE', text: 'J\'aime travailler avec mes mains' },
+      { id: 'R4_PE', text: 'Je suis méthodique' },
+      { id: 'R5_PE', text: 'Je suis orienté(e) vers les résultats' }
+    ],
+    I: [
+      { id: 'I1_PE', text: 'Je suis curieux(se) intellectuellement' },
+      { id: 'I2_PE', text: 'J\'aime résoudre des énigmes' },
+      { id: 'I3_PE', text: 'Je suis analytique' },
+      { id: 'I4_PE', text: 'J\'aime explorer des idées complexes' },
+      { id: 'I5_PE', text: 'Je suis observateur(trice)' }
+    ],
+    A: [
+      { id: 'A1_PE', text: 'Je suis créatif(ve)' },
+      { id: 'A2_PE', text: 'J\'ai une sensibilité artistique' },
+      { id: 'A3_PE', text: 'J\'aime m\'exprimer de manière originale' },
+      { id: 'A4_PE', text: 'Je suis imaginatif(ve)' },
+      { id: 'A5_PE', text: 'J\'apprécie l\'innovation' }
+    ],
+    S: [
+      { id: 'S1_PE', text: 'Je suis empathique' },
+      { id: 'S2_PE', text: 'J\'aime aider les autres' },
+      { id: 'S3_PE', text: 'Je suis à l\'écoute' },
+      { id: 'S4_PE', text: 'Je suis patient(e)' },
+      { id: 'S5_PE', text: 'Je suis sociable' }
+    ],
+    E: [
+      { id: 'E1_PE', text: 'Je suis leader' },
+      { id: 'E2_PE', text: 'J\'aime prendre des initiatives' },
+      { id: 'E3_PE', text: 'Je suis persuasif(ve)' },
+      { id: 'E4_PE', text: 'J\'ai confiance en moi' },
+      { id: 'E5_PE', text: 'Je suis ambitieux(se)' }
+    ],
+    C: [
+      { id: 'C1_PE', text: 'Je suis organisé(e)' },
+      { id: 'C2_PE', text: 'J\'aime la précision' },
+      { id: 'C3_PE', text: 'Je suis fiable' },
+      { id: 'C4_PE', text: 'Je suis méticuleux(se)' },
+      { id: 'C5_PE', text: 'Je respecte les règles' }
+    ]
+  }
 };
+
+export const RIASEC_THEMES = [
+  { id: 'interests_activities', label: 'Intérêts - Activités' },
+  { id: 'interests_occupations', label: 'Intérêts - Occupations' },
+  { id: 'aptitudes', label: 'Aptitudes' },
+  { id: 'personnalite', label: 'Personnalité' }
+];
+
+export const RIASEC_LETTERS = [
+  { id: 'R', label: 'Réaliste' },
+  { id: 'I', label: 'Investigateur' },
+  { id: 'A', label: 'Artistique' },
+  { id: 'S', label: 'Social' },
+  { id: 'E', label: 'Entreprenant' },
+  { id: 'C', label: 'Conventionnel' }
+];
 
 export const TIPI_QUESTIONS = [
   { id: 'TIPI1', text: 'Extraverti, enthousiaste' },

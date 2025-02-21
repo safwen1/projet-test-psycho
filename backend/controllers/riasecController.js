@@ -3,38 +3,33 @@ const RiasecResult = require('../models/RiasecResult');
 // Soumettre un nouveau test RIASEC
 exports.submitTest = async (req, res) => {
   try {
-    const {
-      responses,
-      testDuration,
-      startTime,
-      endTime
-    } = req.body;
+    const { responses, scores, duration } = req.body;
 
     // Créer une nouvelle instance de résultat
     const result = new RiasecResult({
       result: {
-        userAnswers: responses.riasec,
+        scores: scores.total,
+        themes: scores.themes,
+        predominant: scores.predominant,
+        userAnswers: responses
       },
       metadata: {
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-        duration: testDuration
+        duration: duration
       }
     });
-
-    // Calculer les scores
-    result.result.scores = result.calculateScores();
 
     // Sauvegarder le résultat
     await result.save();
 
     // Envoyer la réponse
     res.status(201).json({
+      success: true,
       result: {
         scores: result.result.scores,
-        userAnswers: Object.fromEntries(result.result.userAnswers)
+        themes: result.result.themes,
+        predominant: result.result.predominant
       },
-      duration: testDuration
+      duration: result.metadata.duration
     });
   } catch (error) {
     console.error('Erreur lors de la soumission du test:', error);

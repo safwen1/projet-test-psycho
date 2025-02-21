@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
-import { LinearProgress, Box, Typography, Slider } from '@mui/material';
+import { LinearProgress, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   RIASEC_QUESTIONS,
   RIASEC_SCALE,
+  RIASEC_THEMES,
+  RIASEC_LETTERS
 } from '../../constants/RIASEC/data';
 import styleSensei from '../../images/style-sensei.png';
 
@@ -205,6 +207,19 @@ const ProgressText = styled.div`
   margin-top: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+  font-weight: 500;
+`;
+
+const ThemeText = styled.div`
+  color: #9c27b0;
+  font-weight: 600;
+  margin-top: 0.3rem;
+`;
+
+const PageCounter = styled.div`
+  font-size: 0.85rem;
+  color: #9c27b0;
+  font-weight: 500;
 `;
 
 const SectionTitle = styled.h2`
@@ -220,32 +235,35 @@ const SectionTitle = styled.h2`
   }
 `;
 
-const CheckboxContainer = styled.div`
+const CheckboxGroup = styled(FormGroup)`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   width: 100%;
   margin-top: 1rem;
 `;
 
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
+const StyledCheckbox = styled(FormControlLabel)`
+  margin: 0.5rem;
   padding: 0.5rem;
-  border-radius: 5px;
-  transition: background-color 0.2s;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: rgba(156, 39, 176, 0.1);
   }
-`;
 
-const StyledCheckbox = styled.input`
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+  .MuiCheckbox-root {
+    color: #9c27b0;
+    &.Mui-checked {
+      color: #7b1fa2;
+    }
+  }
+
+  .MuiTypography-root {
+    font-family: "Nunito", sans-serif;
+    color: #333;
+  }
 `;
 
 const NavigationButtons = styled.div`
@@ -365,22 +383,52 @@ const SpeakerButton = styled.button`
   }
 `;
 
+const NoSelectionButton = styled.button`
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: transparent;
+  border: 2px dashed #9c27b0;
+  border-radius: 8px;
+  color: #9c27b0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Nunito", sans-serif;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(156, 39, 176, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const AppRiasecTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const quizContainerRef = React.useRef(null);
+  const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
+  const [currentLetter, setCurrentLetter] = useState('R');
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
-  const [responses, setResponses] = useState({
-    riasec: {},
-  });
-  const [currentSection, setCurrentSection] = useState('R');
-  const sections = ['R', 'I', 'A', 'S', 'E', 'C'];
+  const [responses, setResponses] = useState({});
   const [isReading, setIsReading] = useState(false);
-
-  // Calculer le nombre total de questions RIASEC
-  const totalQuestions = Object.values(RIASEC_QUESTIONS).reduce((acc, questions) => acc + questions.length, 0);
 
   useEffect(() => {
     setStartTime(Date.now());
@@ -390,86 +438,201 @@ const AppRiasecTest = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentThemeIndex, currentLetter]);
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
-  const getCurrentQuestion = () => {
-    const sectionIndex = Math.floor(currentQuestionIndex / 8);
-    const questionIndex = currentQuestionIndex % 8;
+  const getCurrentTheme = () => RIASEC_THEMES[currentThemeIndex];
+  const getCurrentQuestions = () => RIASEC_QUESTIONS[getCurrentTheme().id][currentLetter];
+
+  const handleCheckboxChange = (questionId) => {
+    const theme = getCurrentTheme().id;
+    const newResponses = { ...responses };
+    
+    if (!newResponses[theme]) {
+      newResponses[theme] = {};
+    }
+    if (!newResponses[theme][currentLetter]) {
+      newResponses[theme][currentLetter] = [];
+    }
+
+    const currentResponses = newResponses[theme][currentLetter];
+    const currentQuestion = getCurrentQuestions().find(q => q.id === questionId);
+    const index = currentResponses.findIndex(r => r === currentQuestion.text);
+
+    if (index === -1) {
+      currentResponses.push(currentQuestion.text);
+    } else {
+      currentResponses.splice(index, 1);
+    }
+
+    setResponses(newResponses);
+  };
+
+  const isQuestionChecked = (questionId) => {
+    const theme = getCurrentTheme().id;
+    const question = getCurrentQuestions().find(q => q.id === questionId);
+    return responses[theme]?.[currentLetter]?.includes(question.text) || false;
+  };
+
+  const handleNoSelection = () => {
+    const theme = getCurrentTheme().id;
+    const newResponses = { ...responses };
+    
+    if (!newResponses[theme]) {
+      newResponses[theme] = {};
+    }
+    
+    newResponses[theme][currentLetter] = ['aucune'];
+    
+    setResponses(newResponses);
+  };
+
+  const calculateScores = () => {
+    const scores = {
+      themes: {},
+      total: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
+    };
+
+    // Calculer les scores par thème
+    Object.entries(responses).forEach(([theme, themeResponses]) => {
+      scores.themes[theme] = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+      Object.entries(themeResponses).forEach(([letter, answers]) => {
+        const count = answers[0] === 'aucune' ? 0 : answers.length;
+        scores.themes[theme][letter] = count;
+        scores.total[letter] += count;
+      });
+    });
+
+    // Trouver les trois lettres prédominantes
+    const sortedLetters = Object.entries(scores.total)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .map(([letter]) => letter);
+
     return {
-      type: 'riasec',
-      section: sections[sectionIndex],
-      question: RIASEC_QUESTIONS[sections[sectionIndex]][questionIndex]
+      ...scores,
+      predominant: sortedLetters
     };
   };
 
-  const getSliderValue = (current) => {
-    return responses.riasec[current.question.id] || 3;
-  };
-
-  const handleSliderChange = (value) => {
-    const current = getCurrentQuestion();
-    setResponses(prev => ({
-      ...prev,
-      riasec: {
-        ...prev.riasec,
-        [current.question.id]: value
-      }
-    }));
-  };
-
   const handleNext = async () => {
-    if (currentQuestionIndex === totalQuestions - 1) {
-      const endTime = Date.now();
-      const testDuration = Math.round((endTime - startTime) / 1000); // Durée en secondes
+    // Scroll vers le haut du conteneur
+    if (quizContainerRef.current) {
+      quizContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    const isLastLetter = currentLetter === 'C';
+    const isLastTheme = currentThemeIndex === RIASEC_THEMES.length - 1;
+
+    if (isLastLetter && isLastTheme) {
+      const scores = calculateScores();
+      const duration = formatTime(elapsedTime);
       
       try {
+        // Appel à l'API interne
         const response = await fetch(`${import.meta.env.VITE_API_URL}/riasec/submit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            responses: responses,
-            testDuration,
-            startTime,
-            endTime
+            responses,
+            scores,
+            duration
           }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          navigate('/riasec/results', { 
-            state: { 
-              result: data.result,
-              duration: data.duration
-            } 
-          });
-        } else {
-          toast.error('Erreur lors de la soumission du test');
+        if (!response.ok) {
+          throw new Error('Erreur lors de la soumission');
         }
+
+        const data = await response.json();
+
+        // Préparer les données pour le graphique
+        const graphData = [
+          { name: 'Réaliste', value: scores.total.R },
+          { name: 'Investigatif', value: scores.total.I },
+          { name: 'Artistique', value: scores.total.A },
+          { name: 'Social', value: scores.total.S },
+          { name: 'Entreprenant', value: scores.total.E },
+          { name: 'Conventionnel', value: scores.total.C }
+        ];
+
+        // Appel à l'API externe
+        const externalResponse = await fetch('https://dev.app.sensei-france.fr/psycho_tests/new_results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            results: {
+              score: {
+                ...scores.total,
+                themes: scores.themes,
+                predominant: scores.predominant
+              },
+              userAnswers: Object.fromEntries(
+                Object.entries(responses).flatMap(([theme, themeResponses]) =>
+                  Object.entries(themeResponses).map(([letter, answers]) => [
+                    `${theme}_${letter}`,
+                    answers
+                  ])
+                )
+              )
+            },
+            nomTest: "Test d'intérêts professionnels RIASEC",
+            user_id: location.state?.userId || null,
+            token: location.state?.token || null,
+            project_task_id: location.state?.projectTaskId || null,
+            idTest: "riasec"
+          })
+        });
+
+        navigate('/riasec/results', { 
+          state: { 
+            result: {
+              scores: scores.total,
+              themes: scores.themes,
+              predominant: scores.predominant,
+              graphData: graphData
+            },
+            duration: duration
+          } 
+        });
       } catch (error) {
-        toast.error('Erreur de connexion');
         console.error('Erreur:', error);
+        toast.error('Erreur lors de la soumission du test');
       }
+    } else if (isLastLetter) {
+      setCurrentThemeIndex(prev => prev + 1);
+      setCurrentLetter('R');
     } else {
-      setCurrentQuestionIndex(prev => prev + 1);
-      if (currentQuestionIndex < totalQuestions - 1 && (currentQuestionIndex + 1) % 8 === 0) {
-        const nextSectionIndex = Math.floor((currentQuestionIndex + 1) / 8);
-        setCurrentSection(sections[nextSectionIndex]);
-      }
+      const nextLetter = RIASEC_LETTERS[RIASEC_LETTERS.findIndex(l => l.id === currentLetter) + 1].id;
+      setCurrentLetter(nextLetter);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-      const newIndex = currentQuestionIndex - 1;
-      const sectionIndex = Math.floor(newIndex / 8);
-      setCurrentSection(sections[sectionIndex]);
+    // Scroll vers le haut du conteneur
+    if (quizContainerRef.current) {
+      quizContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    if (currentLetter === 'R') {
+      if (currentThemeIndex > 0) {
+        setCurrentThemeIndex(prev => prev - 1);
+        setCurrentLetter('C');
+      }
+    } else {
+      const prevLetter = RIASEC_LETTERS[RIASEC_LETTERS.findIndex(l => l.id === currentLetter) - 1].id;
+      setCurrentLetter(prevLetter);
     }
   };
 
@@ -477,107 +640,50 @@ const AppRiasecTest = () => {
     setShowTimer(!showTimer);
   };
 
-  const readQuestion = () => {
+  const getCurrentProgress = () => {
+    const totalSteps = RIASEC_THEMES.length * RIASEC_LETTERS.length;
+    const currentStep = (currentThemeIndex * RIASEC_LETTERS.length) + RIASEC_LETTERS.findIndex(l => l.id === currentLetter) + 1;
+    return (currentStep / totalSteps) * 100;
+  };
+
+  const getRemainingPages = () => {
+    const totalPages = RIASEC_THEMES.length * RIASEC_LETTERS.length;
+    const currentPage = (currentThemeIndex * RIASEC_LETTERS.length) + RIASEC_LETTERS.findIndex(l => l.id === currentLetter) + 1;
+    return totalPages - currentPage;
+  };
+
+  const isCurrentSectionAnswered = () => {
+    const theme = getCurrentTheme().id;
+    return (responses[theme]?.[currentLetter]?.length > 0) || 
+           (responses[theme]?.[currentLetter]?.includes('aucune'));
+  };
+
+  const readText = (text) => {
     if ('speechSynthesis' in window) {
       // Arrêter toute lecture en cours
       window.speechSynthesis.cancel();
 
-      const current = getCurrentQuestion();
-      const textToRead = current.question.text;
-      
-      const utterance = new SpeechSynthesisUtterance(textToRead);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
       utterance.pitch = 1;
-      
-      setIsReading(true);
-      
-      utterance.onend = () => {
-        setIsReading(false);
-      };
 
-      utterance.onerror = () => {
-        setIsReading(false);
-        toast.error('Erreur lors de la lecture vocale');
-      };
+      utterance.onstart = () => setIsReading(true);
+      utterance.onend = () => setIsReading(false);
+      utterance.onerror = () => setIsReading(false);
 
       window.speechSynthesis.speak(utterance);
-    } else {
-      toast.error('La synthèse vocale n\'est pas supportée par votre navigateur');
     }
   };
 
-  const renderCurrentQuestion = () => {
-    const current = getCurrentQuestion();
-    return (
-      <>
-        <SectionTitle>Section {current.section}</SectionTitle>
-        <QuestionContainer>
-          <QuestionText>{current.question.text}</QuestionText>
-          <SpeakerButton 
-            onClick={readQuestion}
-            disabled={isReading}
-            title="Lire la question à voix haute"
-          >
-            {isReading ? '🔊' : '🔈'}
-          </SpeakerButton>
-        </QuestionContainer>
-        <ScaleContainer>
-          <SliderContainer>
-            <Slider
-              value={getSliderValue(current)}
-              onChange={(_, value) => handleSliderChange(value)}
-              min={1}
-              max={5}
-              step={1}
-              marks
-              sx={{
-                '& .MuiSlider-rail': {
-                  backgroundColor: '#e1bee7',
-                  height: 8,
-                },
-                '& .MuiSlider-track': {
-                  backgroundColor: '#9c27b0',
-                  height: 8,
-                },
-                '& .MuiSlider-thumb': {
-                  width: 24,
-                  height: 24,
-                  backgroundColor: '#fff',
-                  border: '2px solid #9c27b0',
-                  '&:hover, &.Mui-focusVisible': {
-                    boxShadow: '0 0 0 8px rgba(156, 39, 176, 0.16)',
-                  },
-                },
-                '& .MuiSlider-mark': {
-                  backgroundColor: '#bbb',
-                  height: 8,
-                  width: 2,
-                },
-                '& .MuiSlider-markActive': {
-                  backgroundColor: '#fff',
-                },
-              }}
-            />
-            <SliderLabels>
-              <span>N'aime pas</span>
-              <span>Aime beaucoup</span>
-            </SliderLabels>
-          </SliderContainer>
-        </ScaleContainer>
-      </>
-    );
-  };
-
-  const isCurrentQuestionAnswered = () => {
-    const current = getCurrentQuestion();
-    return responses.riasec[current.question.id] !== undefined;
+  const handleSpeakerClick = () => {
+    readText("Cochez toutes les propositions qui vous correspondent");
   };
 
   return (
     <>
       <GlobalStyle />
-      <QuizContainer>
+      <QuizContainer ref={quizContainerRef}>
         <TimerContainer onClick={handleTimerClick}>
           {showTimer ? formatTime(elapsedTime) : ''}
         </TimerContainer>
@@ -585,7 +691,7 @@ const AppRiasecTest = () => {
         <ProgressContainer>
           <LinearProgress
             variant="determinate"
-            value={(currentQuestionIndex / totalQuestions) * 100}
+            value={getCurrentProgress()}
             sx={{
               height: 10,
               borderRadius: 5,
@@ -597,24 +703,64 @@ const AppRiasecTest = () => {
             }}
           />
           <ProgressText>
-            Question {currentQuestionIndex + 1} sur {totalQuestions}
+            Question {(currentThemeIndex * RIASEC_LETTERS.length) + RIASEC_LETTERS.findIndex(l => l.id === currentLetter) + 1} sur 24
           </ProgressText>
+          <ThemeText>
+            Thème : {getCurrentTheme().label} - Section {currentLetter}
+          </ThemeText>
         </ProgressContainer>
 
-        {renderCurrentQuestion()}
+        <SectionTitle>
+          {RIASEC_LETTERS.find(l => l.id === currentLetter).label}
+        </SectionTitle>
+
+        <QuestionContainer>
+          <Typography variant="h6" style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative' }}>
+            Cochez toutes les propositions qui vous correspondent
+            <SpeakerButton 
+              onClick={handleSpeakerClick}
+              disabled={isReading}
+              title="Lire la question"
+            >
+              {isReading ? '🔊' : '🔈'}
+            </SpeakerButton>
+          </Typography>
+          <CheckboxContainer>
+            <CheckboxGroup>
+              {getCurrentQuestions().map((question) => (
+                <StyledCheckbox
+                  key={question.id}
+                  control={
+                    <Checkbox
+                      checked={isQuestionChecked(question.id)}
+                      onChange={() => handleCheckboxChange(question.id)}
+                    />
+                  }
+                  label={question.text}
+                />
+              ))}
+            </CheckboxGroup>
+            <NoSelectionButton 
+              onClick={handleNoSelection}
+              type="button"
+            >
+              Aucune proposition ne me correspond
+            </NoSelectionButton>
+          </CheckboxContainer>
+        </QuestionContainer>
 
         <NavigationButtons>
           <PreviousButton
             onClick={handleBack}
-            disabled={currentQuestionIndex === 0}
+            disabled={currentThemeIndex === 0 && currentLetter === 'R'}
           >
             Précédent
           </PreviousButton>
           <NextButton
             onClick={handleNext}
-            disabled={!isCurrentQuestionAnswered()}
+            disabled={!isCurrentSectionAnswered()}
           >
-            {currentQuestionIndex === totalQuestions - 1 ? 'Terminer' : 'Suivant'}
+            {currentThemeIndex === RIASEC_THEMES.length - 1 && currentLetter === 'C' ? 'Terminer' : 'Suivant'}
           </NextButton>
         </NavigationButtons>
       </QuizContainer>
