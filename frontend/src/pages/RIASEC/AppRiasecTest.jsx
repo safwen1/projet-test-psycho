@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
-import { LinearProgress, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { LinearProgress, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox, RadioGroup, Radio } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -418,6 +418,39 @@ const CheckboxContainer = styled.div`
   width: 100%;
 `;
 
+const RadioButtonsGroup = styled(RadioGroup)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: rgba(156, 39, 176, 0.05);
+  border-radius: 8px;
+`;
+
+const StyledRadio = styled(FormControlLabel)`
+  margin: 0;
+  .MuiRadio-root {
+    color: #9c27b0;
+    &.Mui-checked {
+      color: #7b1fa2;
+    }
+  }
+  .MuiTypography-root {
+    font-family: "Nunito", sans-serif;
+    color: #333;
+    font-size: 0.9rem;
+  }
+`;
+
+const QuestionItem = styled.div`
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
 const AppRiasecTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -494,6 +527,88 @@ const AppRiasecTest = () => {
     setResponses(newResponses);
   };
 
+  const handleRadioChange = (questionId, value) => {
+    const theme = getCurrentTheme().id;
+    const newResponses = { ...responses };
+    
+    if (!newResponses[theme]) {
+      newResponses[theme] = {};
+    }
+    if (!newResponses[theme][currentLetter]) {
+      newResponses[theme][currentLetter] = {};
+    }
+
+    newResponses[theme][currentLetter][questionId] = parseInt(value);
+    setResponses(newResponses);
+  };
+
+  const getRadioValue = (questionId) => {
+    const theme = getCurrentTheme().id;
+    return responses[theme]?.[currentLetter]?.[questionId]?.toString() || '';
+  };
+
+  const isCurrentSectionAnswered = () => {
+    const theme = getCurrentTheme().id;
+    if (theme === 'aptitudes') {
+      const currentResponses = responses[theme]?.[currentLetter] || {};
+      const questions = getCurrentQuestions();
+      return questions.every(q => currentResponses[q.id] !== undefined);
+    }
+    return (responses[theme]?.[currentLetter]?.length > 0) || 
+           (responses[theme]?.[currentLetter]?.includes('aucune'));
+  };
+
+  const renderQuestions = () => {
+    const theme = getCurrentTheme().id;
+    const questions = getCurrentQuestions();
+
+    if (theme === 'aptitudes') {
+      return (
+        <div>
+          {questions.map((question) => (
+            <QuestionItem key={question.id}>
+              <QuestionText>{question.text}</QuestionText>
+              <RadioButtonsGroup
+                row
+                value={getRadioValue(question.id)}
+                onChange={(e) => handleRadioChange(question.id, e.target.value)}
+              >
+                <StyledRadio value="1" control={<Radio />} label="Faible" />
+                <StyledRadio value="2" control={<Radio />} label="Moyen" />
+                <StyledRadio value="3" control={<Radio />} label="Fort" />
+              </RadioButtonsGroup>
+            </QuestionItem>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <CheckboxContainer>
+        <CheckboxGroup>
+          {questions.map((question) => (
+            <StyledCheckbox
+              key={question.id}
+              control={
+                <Checkbox
+                  checked={isQuestionChecked(question.id)}
+                  onChange={() => handleCheckboxChange(question.id)}
+                />
+              }
+              label={question.text}
+            />
+          ))}
+        </CheckboxGroup>
+        <NoSelectionButton 
+          onClick={handleNoSelection}
+          type="button"
+        >
+          Aucune proposition ne me correspond
+        </NoSelectionButton>
+      </CheckboxContainer>
+    );
+  };
+
   const calculateScores = () => {
     const scores = {
       themes: {},
@@ -503,10 +618,19 @@ const AppRiasecTest = () => {
     // Calculer les scores par thème
     Object.entries(responses).forEach(([theme, themeResponses]) => {
       scores.themes[theme] = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+      
       Object.entries(themeResponses).forEach(([letter, answers]) => {
-        const count = answers[0] === 'aucune' ? 0 : answers.length;
-        scores.themes[theme][letter] = count;
-        scores.total[letter] += count;
+        if (theme === 'aptitudes') {
+          // Pour le thème aptitudes, sommer les valeurs (1, 2 ou 3)
+          const sum = Object.values(answers).reduce((acc, val) => acc + val, 0);
+          scores.themes[theme][letter] = sum;
+          scores.total[letter] += sum;
+        } else {
+          // Pour les autres thèmes, compter le nombre de réponses positives
+          const count = answers[0] === 'aucune' ? 0 : answers.length;
+          scores.themes[theme][letter] = count;
+          scores.total[letter] += count;
+        }
       });
     });
 
@@ -536,6 +660,18 @@ const AppRiasecTest = () => {
       const duration = formatTime(elapsedTime);
       
       try {
+        // Transformer les réponses pour l'API
+        const transformedResponses = { ...responses };
+        
+        // Transformer les réponses d'aptitudes en tableau de chaînes
+        if (transformedResponses.aptitudes) {
+          Object.keys(transformedResponses.aptitudes).forEach(letter => {
+            const aptitudesObj = transformedResponses.aptitudes[letter];
+            transformedResponses.aptitudes[letter] = Object.entries(aptitudesObj)
+              .map(([id, value]) => `${id}:${value}`);
+          });
+        }
+
         // Appel à l'API interne
         const response = await fetch(`${import.meta.env.VITE_API_URL}/riasec/submit`, {
           method: 'POST',
@@ -543,7 +679,7 @@ const AppRiasecTest = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            responses,
+            responses: transformedResponses,
             scores,
             duration
           }),
@@ -565,6 +701,15 @@ const AppRiasecTest = () => {
           { name: 'Conventionnel', value: scores.total.C }
         ];
 
+        // Transformer les réponses pour l'API externe
+        const userAnswers = {};
+        Object.entries(transformedResponses).forEach(([theme, themeResponses]) => {
+          Object.entries(themeResponses).forEach(([letter, answers]) => {
+            userAnswers[`${theme}_${letter}`] = Array.isArray(answers) ? answers : 
+              Object.entries(answers).map(([id, value]) => `${id}:${value}`);
+          });
+        });
+
         // Appel à l'API externe
         const externalResponse = await fetch('https://dev.app.sensei-france.fr/psycho_tests/new_results', {
           method: 'POST',
@@ -578,14 +723,7 @@ const AppRiasecTest = () => {
                 themes: scores.themes,
                 predominant: scores.predominant
               },
-              userAnswers: Object.fromEntries(
-                Object.entries(responses).flatMap(([theme, themeResponses]) =>
-                  Object.entries(themeResponses).map(([letter, answers]) => [
-                    `${theme}_${letter}`,
-                    answers
-                  ])
-                )
-              )
+              userAnswers
             },
             nomTest: "Test d'intérêts professionnels RIASEC",
             user_id: location.state?.userId || null,
@@ -652,12 +790,6 @@ const AppRiasecTest = () => {
     return totalPages - currentPage;
   };
 
-  const isCurrentSectionAnswered = () => {
-    const theme = getCurrentTheme().id;
-    return (responses[theme]?.[currentLetter]?.length > 0) || 
-           (responses[theme]?.[currentLetter]?.includes('aucune'));
-  };
-
   const readText = (text) => {
     if ('speechSynthesis' in window) {
       // Arrêter toute lecture en cours
@@ -716,7 +848,9 @@ const AppRiasecTest = () => {
 
         <QuestionContainer>
           <Typography variant="h6" style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative' }}>
-            Cochez toutes les propositions qui vous correspondent
+            {getCurrentTheme().id === 'aptitudes' 
+              ? "Évaluez votre niveau pour chaque aptitude"
+              : "Cochez toutes les propositions qui vous correspondent"}
             <SpeakerButton 
               onClick={handleSpeakerClick}
               disabled={isReading}
@@ -725,28 +859,7 @@ const AppRiasecTest = () => {
               {isReading ? '🔊' : '🔈'}
             </SpeakerButton>
           </Typography>
-          <CheckboxContainer>
-            <CheckboxGroup>
-              {getCurrentQuestions().map((question) => (
-                <StyledCheckbox
-                  key={question.id}
-                  control={
-                    <Checkbox
-                      checked={isQuestionChecked(question.id)}
-                      onChange={() => handleCheckboxChange(question.id)}
-                    />
-                  }
-                  label={question.text}
-                />
-              ))}
-            </CheckboxGroup>
-            <NoSelectionButton 
-              onClick={handleNoSelection}
-              type="button"
-            >
-              Aucune proposition ne me correspond
-            </NoSelectionButton>
-          </CheckboxContainer>
+          {renderQuestions()}
         </QuestionContainer>
 
         <NavigationButtons>

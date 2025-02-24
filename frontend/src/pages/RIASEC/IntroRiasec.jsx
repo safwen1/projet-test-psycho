@@ -219,19 +219,29 @@ const IntroRiasec = () => {
             <br/><br/>
             Structure du test :
             <br/>
-            Le test est divisé en 4 thèmes :
-            <br/>
-            • Intérêts - Activités : Vos préférences pour différentes activités (15 questions par dimension)
-            <br/>
-            • Intérêts - Occupations : Votre attrait pour différentes professions (15 questions par dimension)
-            <br/>
-            • Aptitudes : Vos compétences et capacités (15 questions par dimension)
-            <br/>
-            • Personnalité : Vos traits de caractère (15 questions par dimension)
+            Le test est divisé en 4 thèmes avec des modes de réponse différents :
             <br/><br/>
-            Pour chaque thème, vous devrez évaluer 15 propositions par dimension RIASEC.
+            • Intérêts - Activités : Cochez les activités qui vous intéressent (15 propositions par dimension)
             <br/>
-            Pour chaque proposition, indiquez si elle vous correspond (Oui) ou non (Non).
+            • Intérêts - Occupations : Cochez les professions qui vous attirent (15 propositions par dimension)
+            <br/>
+            • Aptitudes : Évaluez vos compétences sur une échelle (Faible/Moyen/Fort) pour chaque aptitude (10 propositions par dimension)
+            <br/>
+            • Personnalité : Cochez les traits de caractère qui vous correspondent (10 propositions par dimension)
+            <br/><br/>
+            Total : 300 questions (50 questions × 6 dimensions)
+            <br/><br/>
+            Système de notation :
+            <br/>
+            • Pour les thèmes Intérêts et Personnalité : Répondez par Oui (coché) ou Non (non coché)
+            <br/>
+            • Pour le thème Aptitudes : Évaluez chaque aptitude selon trois niveaux :
+            <br/>
+            &nbsp;&nbsp;&nbsp;- Faible (1 point)
+            <br/>
+            &nbsp;&nbsp;&nbsp;- Moyen (2 points)
+            <br/>
+            &nbsp;&nbsp;&nbsp;- Fort (3 points)
             <br/><br/>
             Durée moyenne : 45-50 minutes
             <br/><br/>

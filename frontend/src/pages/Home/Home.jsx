@@ -169,11 +169,11 @@ const tests = [
   {
     id: 'riasec',
     title: 'Test RIASEC',
-    description: 'Découvrez vos intérêts professionnels à travers 360 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
+    description: 'Découvrez vos intérêts professionnels à travers 300 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
     icon: RiasecIcon,
     path: '/riasec',
     duration: '45-50 minutes',
-    questionCount: 360,
+    questionCount: 300,
     accentColor: '#9c27b0',
     category: 'personality'
   }
