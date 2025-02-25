@@ -165,6 +165,18 @@ const tests = [
     questionCount: 50,
     accentColor: '#ff9800',
     category: 'personality'
+  },
+  {
+    id: 'motivation',
+    title: 'Test de Motivation',
+    description: 'Explorez vos sources de motivation profondes et découvrez ce qui vous pousse réellement à agir. Ce test analysera vos motivations intrinsèques et extrinsèques pour vous aider à mieux comprendre vos moteurs personnels.',
+    icon: TestIcons.emotional,
+    path: null,
+    duration: '15-20 minutes',
+    questionCount: 60,
+    accentColor: '#33A474',
+    category: 'emotional',
+    comingSoon: true
   }
 ];
 
@@ -233,7 +245,8 @@ const Home = () => {
             questionCount={test.questionCount}
             icon={test.icon}
             accentColor={test.accentColor}
-            onStart={() => handleStartTest(test.path)}
+            onStart={() => test.comingSoon ? null : handleStartTest(test.path)}
+            comingSoon={test.comingSoon}
           />
         ))}
       </TestsGrid>
