@@ -184,7 +184,6 @@ const categories = [
   { id: 'all', label: 'Tous les tests', icon: null, color: '#666' },
   { id: 'personality', label: 'Personnalité', icon: TestIcons.personality, color: '#4298B4' },
   { id: 'emotional', label: 'Émotionnel', icon: TestIcons.emotional, color: '#33A474' },
-  { id: 'cognitive', label: 'Cognitif', icon: TestIcons.cognitive, color: '#2196f3' }
 ];
 
 const Home = () => {
