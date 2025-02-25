@@ -176,6 +176,17 @@ const tests = [
     questionCount: 300,
     accentColor: '#9c27b0',
     category: 'personality'
+  },
+  {
+    id: 'bigfive',
+    title: 'Test Big Five',
+    description: 'Découvrez votre profil de personnalité à travers les cinq dimensions fondamentales : Extraversion, Névrosisme, Agréabilité, Conscience et Ouverture. Ce test de 10-15 minutes vous permettra de mieux comprendre vos traits de personnalité dominants.',
+    icon: TestIcons.bigFive,
+    path: '/bigfive',
+    duration: '10-15 minutes',
+    questionCount: 50,
+    accentColor: '#ff9800',
+    category: 'personality'
   }
 ];
 
