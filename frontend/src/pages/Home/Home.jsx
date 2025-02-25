@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import TestCard from '../../components/TestCard/TestCard';
 import { TestIcons } from '../../components/icons/TestIcons';
-import { GcbsIcon, AmbiIcon, RiasecIcon } from '../../components/icons/TestIcons';
+import { RiasecIcon } from '../../components/icons/TestIcons';
 
 const PageContainer = styled.div`
   min-height: calc(100vh - 70px);
@@ -144,28 +144,6 @@ const CategoryButton = styled.button`
 `;
 
 const tests = [
-  {
-    id: 'gcbs',
-    title: 'Test GCBS',
-    description: 'Évaluez votre tendance à adhérer à différentes théories explicatives à travers 40 questions soigneusement sélectionnées. Le GCBS (Generic Conspiracist Beliefs Scale) est un outil scientifique validé qui mesure les différentes dimensions de la pensée critique et analytique. Durée : 10-15 minutes.',
-    icon: GcbsIcon,
-    path: '/gcbs',
-    duration: '10-15 minutes',
-    questionCount: 40,
-    accentColor: '#2196f3',
-    category: 'cognitive'
-  },
-  {
-    id: 'ambi',
-    title: 'Test Ambi',
-    description: 'Explorez votre rapport à l\'ambiguïté à travers 181 questions variées. Ce test évalue votre capacité à gérer les situations incertaines et votre flexibilité cognitive face à différents scénarios. Une évaluation complète de votre tolérance à l\'ambiguïté dans divers contextes. Durée : 10-15 minutes.',
-    icon: AmbiIcon,
-    path: '/ambi',
-    duration: '10-15 minutes',
-    questionCount: 181,
-    accentColor: '#4caf50',
-    category: 'personality'
-  },
   {
     id: 'riasec',
     title: 'Test RIASEC',
