@@ -1,0 +1,150 @@
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import AdaptiveLoader from '../Loaders/AdaptiveLoader';
+import { useNetwork } from '../../context/NetworkContext';
+
+/**
+ * HOC (Higher-Order Component) qui implémente le chargement paresseux pour les composants
+ * @param {Function} importComponent - Fonction qui retourne une promesse d'import de composant
+ * @param {Object} options - Options pour le chargement paresseux
+ * @param {string} options.fallback - Message de chargement à afficher
+ * @param {Function} options.onError - Fonction de gestion des erreurs
+ * @returns {React.ComponentType} - Composant avec chargement paresseux
+ */
+export const withLazyLoading = (importComponent, options = {}) => {
+  // Options par défaut
+  const {
+    fallback = "Chargement en cours...",
+    onError = (error) => console.error("Erreur de chargement du composant:", error),
+    timeout = 15000, // Timeout en ms (15 secondes par défaut)
+  } = options;
+
+  // Création du composant avec chargement paresseux et gestion d'erreur améliorée
+  const LazyComponent = lazy(() => {
+    // Ajout d'un timeout pour détecter les chargements bloqués
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Timeout: Le chargement du composant a pris plus de ${timeout/1000}s`));
+      }, timeout);
+    });
+
+    // Course entre le chargement du composant et le timeout
+    return Promise.race([
+      importComponent().catch(error => {
+        onError(error);
+        console.error('Erreur lors du chargement du composant:', error.message);
+        // Renvoie un module par défaut pour éviter de planter l'application
+        return { 
+          default: () => (
+            <div className="error-boundary">
+              <h3>Erreur de chargement</h3>
+              <p>Impossible de charger le composant: {error.message}</p>
+              <button onClick={() => window.location.reload()}>Recharger la page</button>
+            </div>
+          ) 
+        };
+      }),
+      timeoutPromise
+    ]).catch(error => {
+      onError(error);
+      console.error('Erreur de chargement (timeout):', error.message);
+      return { 
+        default: () => (
+          <div className="error-boundary">
+            <h3>Chargement trop long</h3>
+            <p>Le chargement du composant a pris trop de temps</p>
+            <button onClick={() => window.location.reload()}>Recharger la page</button>
+          </div>
+        ) 
+      };
+    });
+  });
+
+  // Wrapper autour du composant lazy
+  const WithLazyLoading = (props) => {
+    const { interfaceQuality } = useNetwork();
+    const [hasError, setHasError] = useState(false);
+    const [error, setError] = useState(null);
+
+    // En cas d'erreur pendant le rendu
+    useEffect(() => {
+      // Remet l'erreur à zéro quand les props changent
+      setHasError(false);
+      setError(null);
+    }, [props]);
+
+    // Si la qualité d'interface est basse, on peut afficher une version simplifiée
+    const SimplifiedComponent = () => (
+      <div className="simplified-component">
+        <h3>{options.title || "Contenu"}</h3>
+        <p>{options.description || "Chargement du contenu complet..."}</p>
+      </div>
+    );
+
+    // Gestionnaire d'erreur pour Suspense
+    const handleError = (error) => {
+      console.error('Erreur pendant le rendu:', error);
+      setHasError(true);
+      setError(error);
+      onError(error);
+    };
+
+    // En cas d'erreur, affiche un message d'erreur
+    if (hasError) {
+      return (
+        <div className="error-boundary">
+          <h3>Erreur de rendu</h3>
+          <p>Une erreur s'est produite lors de l'affichage: {error?.message}</p>
+          <button onClick={() => window.location.reload()}>Recharger la page</button>
+        </div>
+      );
+    }
+
+    return (
+      // On utilise un try/catch via ErrorBoundary
+      <React.Fragment>
+        <Suspense fallback={<AdaptiveLoader message={fallback} />}>
+          {interfaceQuality === 'low' && options.simplified ? (
+            <SimplifiedComponent />
+          ) : (
+            <React.Fragment>
+              <LazyComponent {...props} />
+            </React.Fragment>
+          )}
+        </Suspense>
+      </React.Fragment>
+    );
+  };
+
+  return WithLazyLoading;
+};
+
+/**
+ * Fonction utilitaire pour créer facilement des routes avec chargement paresseux
+ * @param {string} componentPath - Chemin vers le composant à charger
+ * @param {Object} options - Options pour le chargement paresseux
+ * @returns {React.ComponentType} - Composant de route avec chargement paresseux
+ */
+export const lazyRoute = (componentPath, options = {}) => {
+  console.log(`Configuration du chargement paresseux pour: ${componentPath}`);
+  
+  return withLazyLoading(
+    () => {
+      console.log(`Chargement du composant: ${componentPath}`);
+      return import(`../../${componentPath}`)
+        .then(module => {
+          console.log(`Composant chargé avec succès: ${componentPath}`);
+          return module;
+        })
+        .catch(error => {
+          console.error(`Erreur de chargement pour ${componentPath}:`, error);
+          throw error;
+        });
+    },
+    {
+      fallback: options.fallback || `Chargement de la page...`,
+      ...options
+    }
+  );
+};
+
+export default withLazyLoading; 
