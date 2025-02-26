@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import TestCard from '../../components/TestCard/TestCard';
 import { TestIcons } from '../../components/icons/TestIcons';
-import { GcbsIcon, AmbiIcon, RiasecIcon } from '../../components/icons/TestIcons';
+import { RiasecIcon } from '../../components/icons/TestIcons';
 
 const PageContainer = styled.div`
   min-height: calc(100vh - 70px);
@@ -145,28 +145,6 @@ const CategoryButton = styled.button`
 
 const tests = [
   {
-    id: 'gcbs',
-    title: 'Test GCBS',
-    description: 'Évaluez votre tendance à adhérer à différentes théories explicatives à travers 40 questions soigneusement sélectionnées. Le GCBS (Generic Conspiracist Beliefs Scale) est un outil scientifique validé qui mesure les différentes dimensions de la pensée critique et analytique. Durée : 10-15 minutes.',
-    icon: GcbsIcon,
-    path: '/gcbs',
-    duration: '10-15 minutes',
-    questionCount: 40,
-    accentColor: '#2196f3',
-    category: 'cognitive'
-  },
-  {
-    id: 'ambi',
-    title: 'Test Ambi',
-    description: 'Explorez votre rapport à l\'ambiguïté à travers 181 questions variées. Ce test évalue votre capacité à gérer les situations incertaines et votre flexibilité cognitive face à différents scénarios. Une évaluation complète de votre tolérance à l\'ambiguïté dans divers contextes. Durée : 10-15 minutes.',
-    icon: AmbiIcon,
-    path: '/ambi',
-    duration: '10-15 minutes',
-    questionCount: 181,
-    accentColor: '#4caf50',
-    category: 'personality'
-  },
-  {
     id: 'riasec',
     title: 'Test RIASEC',
     description: 'Découvrez vos intérêts professionnels à travers 300 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
@@ -176,6 +154,29 @@ const tests = [
     questionCount: 300,
     accentColor: '#9c27b0',
     category: 'personality'
+  },
+  {
+    id: 'bigfive',
+    title: 'Test Big Five',
+    description: 'Découvrez votre profil de personnalité à travers les cinq dimensions fondamentales : Extraversion, Névrosisme, Agréabilité, Conscience et Ouverture. Ce test de 10-15 minutes vous permettra de mieux comprendre vos traits de personnalité dominants.',
+    icon: TestIcons.bigFive,
+    path: '/bigfive',
+    duration: '10-15 minutes',
+    questionCount: 50,
+    accentColor: '#ff9800',
+    category: 'personality'
+  },
+  {
+    id: 'motivation',
+    title: 'Test de Motivation',
+    description: 'Explorez vos sources de motivation profondes et découvrez ce qui vous pousse réellement à agir. Ce test analysera vos motivations intrinsèques et extrinsèques pour vous aider à mieux comprendre vos moteurs personnels.',
+    icon: TestIcons.emotional,
+    path: null,
+    duration: '15-20 minutes',
+    questionCount: 60,
+    accentColor: '#33A474',
+    category: 'emotional',
+    comingSoon: true
   }
 ];
 
@@ -183,7 +184,6 @@ const categories = [
   { id: 'all', label: 'Tous les tests', icon: null, color: '#666' },
   { id: 'personality', label: 'Personnalité', icon: TestIcons.personality, color: '#4298B4' },
   { id: 'emotional', label: 'Émotionnel', icon: TestIcons.emotional, color: '#33A474' },
-  { id: 'cognitive', label: 'Cognitif', icon: TestIcons.cognitive, color: '#2196f3' }
 ];
 
 const Home = () => {
@@ -244,7 +244,8 @@ const Home = () => {
             questionCount={test.questionCount}
             icon={test.icon}
             accentColor={test.accentColor}
-            onStart={() => handleStartTest(test.path)}
+            onStart={() => test.comingSoon ? null : handleStartTest(test.path)}
+            comingSoon={test.comingSoon}
           />
         ))}
       </TestsGrid>

@@ -8,7 +8,7 @@ const CardWrapper = styled.div`
   padding: 2rem;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+  cursor: ${props => props.$comingSoon ? 'default' : 'pointer'};
   position: relative;
   overflow: hidden;
   width: 300px;
@@ -16,10 +16,11 @@ const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  opacity: ${props => props.$comingSoon ? 0.8 : 1};
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    transform: ${props => props.$comingSoon ? 'none' : 'translateY(-5px)'};
+    box-shadow: ${props => props.$comingSoon ? '0 10px 20px rgba(0, 0, 0, 0.05)' : '0 15px 30px rgba(0, 0, 0, 0.1)'};
   }
 
   &::before {
@@ -30,7 +31,25 @@ const CardWrapper = styled.div`
     width: 100%;
     height: 5px;
     background: ${props => props.color || '#fabc1c'};
+    opacity: ${props => props.$comingSoon ? 0.5 : 1};
   }
+`;
+
+const ComingSoonBadge = styled.div`
+  position: absolute;
+  top: 25px;
+  right: -50px;
+  background: #f44336;
+  color: white;
+  padding: 8px 60px;
+  transform: rotate(45deg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  text-align: center;
+  width: 200px;
+  letter-spacing: 0.5px;
 `;
 
 const IconWrapper = styled.div`
@@ -80,12 +99,13 @@ const Button = styled.button`
   border-radius: 10px;
   font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
+  cursor: ${props => props.$comingSoon ? 'not-allowed' : 'pointer'};
   transition: opacity 0.3s ease;
   width: 100%;
+  opacity: ${props => props.$comingSoon ? 0.7 : 1};
 
   &:hover {
-    opacity: 0.9;
+    opacity: ${props => props.$comingSoon ? 0.7 : 0.9};
   }
 `;
 
@@ -96,10 +116,12 @@ const TestCard = ({
   questionCount,
   icon: Icon,
   accentColor,
-  onStart
+  onStart,
+  comingSoon
 }) => {
   return (
-    <CardWrapper color={accentColor}>
+    <CardWrapper color={accentColor} $comingSoon={comingSoon}>
+      {comingSoon && <ComingSoonBadge>Bientôt disponible</ComingSoonBadge>}
       <div>
         <IconWrapper color={accentColor}>
           <Icon size={30} color={accentColor} />
@@ -116,8 +138,10 @@ const TestCard = ({
         <Button 
           color={accentColor}
           onClick={onStart}
+          $comingSoon={comingSoon}
+          disabled={comingSoon}
         >
-          Commencer le test
+          {comingSoon ? 'Bientôt disponible' : 'Commencer le test'}
         </Button>
       </div>
     </CardWrapper>
@@ -131,7 +155,12 @@ TestCard.propTypes = {
   questionCount: PropTypes.number.isRequired,
   icon: PropTypes.elementType.isRequired,
   accentColor: PropTypes.string,
-  onStart: PropTypes.func.isRequired
+  onStart: PropTypes.func.isRequired,
+  comingSoon: PropTypes.bool
+};
+
+TestCard.defaultProps = {
+  comingSoon: false
 };
 
 export default TestCard; 
