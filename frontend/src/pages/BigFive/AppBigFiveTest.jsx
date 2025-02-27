@@ -15,6 +15,7 @@ import { VolumeUp, Timer } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BIG_FIVE_QUESTIONS } from '../../constants/BigFive/data';
+import usePreventNavigation from '../../hooks/usePreventNavigation';
 
 const fadeIn = keyframes`
   from {
@@ -226,6 +227,56 @@ const AppBigFiveTest = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Activation de la prévention de navigation pendant le test
+  usePreventNavigation(
+    true,
+    "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?",
+    "Quitter le test Big Five ?"
+  );
+
+  // Solution directe pour bloquer le rechargement de la page
+  useEffect(() => {
+    // Fonction pour intercepter l'événement beforeunload (fermeture d'onglet, rechargement)
+    const handleBeforeUnload = (event) => {
+      const message = "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?";
+      event.preventDefault();
+      event.returnValue = message;
+      return message;
+    };
+    
+    // Fonction pour intercepter les touches de rechargement (F5, Ctrl+R)
+    const handleKeyDown = (event) => {
+      // F5 key
+      if (event.key === 'F5') {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec F5 bloqué');
+        return false;
+      }
+      
+      // Ctrl+R ou Cmd+R (Mac)
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'r' || event.keyCode === 82)) {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec Ctrl+R bloqué');
+        return false;
+      }
+    };
+    
+    // Ajoute les écouteurs d'événements au niveau global
+    window.addEventListener('beforeunload', handleBeforeUnload, { capture: true });
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    
+    console.log('Prévention de rechargement activée dans AppBigFiveTest');
+    
+    // Nettoie les écouteurs lors du démontage du composant
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload, { capture: true });
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+      console.log('Prévention de rechargement désactivée dans AppBigFiveTest');
+    };
+  }, []);
 
   useEffect(() => {
     setStartTime(Date.now());
