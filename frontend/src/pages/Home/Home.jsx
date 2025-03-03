@@ -151,7 +151,7 @@ const tests = [
     icon: RiasecIcon,
     path: '/riasec',
     duration: '45-50 minutes',
-    questionCount: 300,
+    questionCount: 24,
     accentColor: '#9c27b0',
     category: 'personality'
   },

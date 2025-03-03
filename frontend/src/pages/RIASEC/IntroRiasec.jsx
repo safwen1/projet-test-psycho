@@ -229,7 +229,7 @@ const IntroRiasec = () => {
             <br/>
             • Personnalité : Cochez les traits de caractère qui vous correspondent (10 propositions par dimension)
             <br/><br/>
-            Total : 300 questions (50 questions × 6 dimensions)
+            Total : 24 questions
             <br/><br/>
             Système de notation :
             <br/>
