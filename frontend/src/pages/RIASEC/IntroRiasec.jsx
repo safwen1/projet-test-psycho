@@ -243,7 +243,7 @@ const IntroRiasec = () => {
             <br/>
             &nbsp;&nbsp;&nbsp;- Fort (3 points)
             <br/><br/>
-            Durée moyenne : 45-50 minutes
+            Ce questionnaire a pour objectif d’identifier les types d’activités et d’environnements professionnels qui vous correspondent le mieux. Il repose sur des recherches en psychologie de l’orientation et ne comporte pas de bonnes ou mauvaises réponses. Répondez spontanément en fonction de ce qui vous attire réellement. Vos réponses seront analysées pour vous proposer un profil personnalisé. La passation dure environ 20 à 30 minutes. (on expliquera la partie "théorique" dans le rapport)
             <br/><br/>
             Conseils :
             <br/>

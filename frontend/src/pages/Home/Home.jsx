@@ -150,7 +150,7 @@ const tests = [
     description: 'Découvrez vos intérêts professionnels à travers 300 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
     icon: RiasecIcon,
     path: '/riasec',
-    duration: '45-50 minutes',
+    duration: '20-30 minutes',
     questionCount: 24,
     accentColor: '#9c27b0',
     category: 'personality'
