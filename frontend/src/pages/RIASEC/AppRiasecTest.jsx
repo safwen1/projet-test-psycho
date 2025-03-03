@@ -624,9 +624,9 @@ const AppRiasecTest = () => {
                 value={getRadioValue(question.id)}
                 onChange={(e) => handleRadioChange(question.id, e.target.value)}
               >
-                <StyledRadio value="1" control={<Radio />} label="Faible" />
-                <StyledRadio value="2" control={<Radio />} label="Moyen" />
-                <StyledRadio value="3" control={<Radio />} label="Fort" />
+                <StyledRadio value="1" control={<Radio />} label=" Je pense ne pas être bon(ne) dans cette tâche" />
+                <StyledRadio value="2" control={<Radio />} label="Je pense être moyennement compétent(e)." />
+                <StyledRadio value="3" control={<Radio />} label="Je pense être très compétent(e)." />
               </RadioButtonsGroup>
             </QuestionItem>
           ))}
