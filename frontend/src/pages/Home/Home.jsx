@@ -146,7 +146,7 @@ const CategoryButton = styled.button`
 const tests = [
   {
     id: 'riasec',
-    title: 'Test RIASEC',
+    title: 'Test Intérêts professionnels',
     description: 'Découvrez vos intérêts professionnels à travers 300 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
     icon: RiasecIcon,
     path: '/riasec',

@@ -359,7 +359,7 @@ const ResultRiasec = () => {
     <PageContainer>
       <Container>
         <HeaderSection>
-          <Title>Vos résultats RIASEC</Title>
+          <Title>Vos résultats du test Intérêts professionnels</Title>
           <Description>
             <p>
               Découvrez votre profil professionnel basé sur la méthode RIASEC. Vos réponses ont été analysées pour chaque dimension, avec un <span className="highlight">score maximum de 60 points</span> par dimension.

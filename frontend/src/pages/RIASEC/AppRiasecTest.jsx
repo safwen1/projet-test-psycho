@@ -468,7 +468,7 @@ const AppRiasecTest = () => {
   usePreventNavigation(
     true,
     "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?",
-    "Quitter le test RIASEC ?"
+    "Quitter le test Intérêts professionnels ?"
   );
   
   // Solution directe pour bloquer le rechargement de la page

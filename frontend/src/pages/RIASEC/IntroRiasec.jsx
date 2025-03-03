@@ -201,9 +201,9 @@ const IntroRiasec = () => {
     <PageContainer>
       <Container>
         <LeftSection>
-          <StyledTitle>Test d'Intérêts Professionnels RIASEC</StyledTitle>
+          <StyledTitle>Test d'Intérêts Professionnels</StyledTitle>
           <Description>
-            Le test RIASEC évalue vos intérêts professionnels à travers six dimensions fondamentales :
+            Le test Intérêts professionnels évalue vos intérêts professionnels à travers six dimensions fondamentales :
             <br/><br/>
             • Réaliste (R) : Activités pratiques et techniques
             <br/>
