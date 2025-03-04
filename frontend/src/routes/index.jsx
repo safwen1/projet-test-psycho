@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { lazyRoute } from '../components/LazyLoad/withLazyLoading';
 import { useNetwork } from '../context/NetworkContext';
 import AdaptiveLoader from '../components/Loaders/AdaptiveLoader';
+import ProtectedRoute from '../components/common/ProtectedRoute';
 
 // Import direct comme solution de secours
 import DirectIntroBigFive from '../pages/BigFive/IntroBigFive';
@@ -197,11 +198,27 @@ const AppRoutes = () => {
                 title="Erreur de chargement" 
                 onRetry={() => retryLoading('/riasec')} 
               /> : 
-              <IntroRiasec />
+              <ProtectedRoute>
+                <IntroRiasec />
+              </ProtectedRoute>
           } 
         />
-        <Route path="/riasec/test" element={<AppRiasecTest />} />
-        <Route path="/riasec/results" element={<ResultRiasec />} />
+        <Route 
+          path="/riasec/test" 
+          element={
+            <ProtectedRoute>
+              <AppRiasecTest />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/riasec/results" 
+          element={
+            <ProtectedRoute>
+              <ResultRiasec />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Routes pour le test Big Five */}
         <Route 
@@ -213,14 +230,37 @@ const AppRoutes = () => {
                 message="Le composant n'a pas pu être chargé. Cela peut être dû à un problème technique temporaire." 
                 onRetry={() => retryLoading('/bigfive')} 
               /> : 
-              <BigFiveIntroRoute />
+              <ProtectedRoute>
+                <BigFiveIntroRoute />
+              </ProtectedRoute>
           } 
         />
-        <Route path="/bigfive/test" element={<AppBigFiveTest />} />
-        <Route path="/bigfive/results" element={<ResultBigFive />} />
+        <Route 
+          path="/bigfive/test" 
+          element={
+            <ProtectedRoute>
+              <AppBigFiveTest />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/bigfive/results" 
+          element={
+            <ProtectedRoute>
+              <ResultBigFive />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Page de résultat générique */}
-        <Route path="/resultat" element={<Resultat />} />
+        <Route 
+          path="/resultat" 
+          element={
+            <ProtectedRoute>
+              <Resultat />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Route par défaut en cas d'URL non reconnue */}
         <Route path="*" element={<Navigate to="/" replace />} />

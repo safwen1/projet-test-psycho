@@ -5,6 +5,7 @@ import { theme } from './styles/theme';
 import Navbar from './components/Navbar/Navbar';
 import { NetworkProvider } from './context/NetworkContext';
 import { NavigationProvider } from './context/NavigationContext';
+import { UserProvider } from './context/userContext';
 import AppRoutes from './routes/index';
 import AdaptiveLoader from './components/Loaders/AdaptiveLoader';
 
@@ -49,15 +50,17 @@ const App = () => {
     <ErrorBoundary>
       <NetworkProvider>
         <NavigationProvider>
-          <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            <Navbar />
-            <React.Suspense 
-              fallback={<AdaptiveLoader message="Chargement de l'application..." />}
-            >
-              <AppRoutes />
-            </React.Suspense>
-          </ThemeProvider>
+          <UserProvider>
+            <ThemeProvider theme={theme}>
+              <GlobalStyles />
+              <Navbar />
+              <React.Suspense 
+                fallback={<AdaptiveLoader message="Chargement de l'application..." />}
+              >
+                <AppRoutes />
+              </React.Suspense>
+            </ThemeProvider>
+          </UserProvider>
         </NavigationProvider>
       </NetworkProvider>
     </ErrorBoundary>
