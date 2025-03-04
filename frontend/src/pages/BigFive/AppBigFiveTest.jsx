@@ -481,7 +481,7 @@ const AppBigFiveTest = () => {
             onChange={(e) => handleAnswer(e.target.value)}
             sx={{ mt: 3 }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {[1, 2, 3, 4, 5].map((value) => (
                 <FormControlLabel
                   key={value}
@@ -505,7 +505,7 @@ const AppBigFiveTest = () => {
                   }
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '10px 20px',
+                    padding: '8px 16px',
                     borderRadius: '8px',
                     transition: 'all 0.3s ease',
                     '&:hover': {

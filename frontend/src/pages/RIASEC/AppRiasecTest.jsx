@@ -239,14 +239,14 @@ const SectionTitle = styled.h2`
 const CheckboxGroup = styled(FormGroup)`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  gap: 0rem;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 `;
 
 const StyledCheckbox = styled(FormControlLabel)`
-  margin: 0.5rem;
-  padding: 0.5rem;
+  margin: 0.25rem;
+  padding: 0.25rem;
   border-radius: 8px;
   transition: background-color 0.3s ease;
 
