@@ -900,10 +900,6 @@ const AppRiasecTest = () => {
           </ThemeText>
         </ProgressContainer>
 
-        <SectionTitle>
-          {RIASEC_LETTERS.find(l => l.id === currentLetter).label}
-        </SectionTitle>
-
         <QuestionContainer>
           <Typography variant="h6" style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative' }}>
             {getCurrentTheme().id === 'aptitudes' 
