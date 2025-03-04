@@ -11,7 +11,7 @@ const CardWrapper = styled.div`
   cursor: ${props => (props.$comingSoon || props.$disabled) ? 'default' : 'pointer'};
   position: relative;
   overflow: hidden;
-  width: 300px;
+  width: 100%;
   min-height: 350px;
   display: flex;
   flex-direction: column;
