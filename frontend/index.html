@@ -1,21 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/Favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Plateforme de tests psychométriques" />
+    <link rel="apple-touch-icon" href="/Favicon.png" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-     
     />
-
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Polyfills pour la compatibilité navigateur -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default,Array.prototype.includes,Promise,Object.assign,fetch"></script>
+    
     <title>Test de psycho</title>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        Vous devez activer JavaScript pour utiliser cette application.
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

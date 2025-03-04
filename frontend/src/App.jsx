@@ -8,6 +8,8 @@ import { NavigationProvider } from './context/NavigationContext';
 import { UserProvider } from './context/userContext';
 import AppRoutes from './routes/index';
 import AdaptiveLoader from './components/Loaders/AdaptiveLoader';
+import BrowserCompatibilityAlert from './components/BrowserCompatibilityAlert';
+import { initGlobalErrorHandler } from './services/errorHandlingService';
 
 // Composant qui gère les erreurs de chargement via ErrorBoundary
 class ErrorBoundary extends React.Component {
@@ -27,11 +29,30 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      // Afficher un message d'erreur convivial
       return (
         <div className="error-boundary-app">
           <h2>Une erreur est survenue</h2>
           <p>{this.state.error?.message || 'Erreur inconnue'}</p>
-          <button onClick={() => window.location.reload()}>Recharger l'application</button>
+          <details style={{ whiteSpace: 'pre-wrap', marginTop: '10px' }}>
+            <summary>Détails techniques (pour le support)</summary>
+            <p>{this.state.error?.toString()}</p>
+            <p>{this.state.errorInfo?.componentStack}</p>
+          </details>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 15px',
+              margin: '20px 0',
+              backgroundColor: '#4285f4',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Recharger l'application
+          </button>
         </div>
       );
     }
@@ -41,9 +62,11 @@ class ErrorBoundary extends React.Component {
 }
 
 const App = () => {
-  // Ajout d'un log pour confirmer que l'application démarre correctement
+  // Initialiser le gestionnaire global d'erreurs
   useEffect(() => {
     console.log('Application initialisée');
+    // Initialiser le gestionnaire d'erreurs
+    initGlobalErrorHandler();
   }, []);
   
   return (
@@ -53,6 +76,8 @@ const App = () => {
           <UserProvider>
             <ThemeProvider theme={theme}>
               <GlobalStyles />
+              {/* Alerte de compatibilité navigateur - s'affiche uniquement si nécessaire */}
+              <BrowserCompatibilityAlert />
               <Navbar />
               <React.Suspense 
                 fallback={<AdaptiveLoader message="Chargement de l'application..." />}

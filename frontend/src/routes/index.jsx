@@ -60,6 +60,14 @@ const Resultat = lazyRoute('pages/Resultat/Resultat', {
   description: 'Résultat de votre test psychométrique'
 });
 
+// Route pour la page d'information sur la compatibilité des navigateurs
+const CompatibilityInfoPage = lazyRoute('pages/CompatibilityInfoPage', { 
+  fallback: 'Chargement des informations de compatibilité...',
+  simplified: true,
+  title: 'Compatibilité du navigateur',
+  description: 'Informations sur la compatibilité de votre navigateur avec notre application'
+});
+
 // Composant de secours en cas d'échec du chargement
 const FallbackComponent = ({ title, message, onRetry }) => (
   <div className="fallback-component">
@@ -262,7 +270,20 @@ const AppRoutes = () => {
           } 
         />
         
-        {/* Route par défaut en cas d'URL non reconnue */}
+        {/* Page d'information sur la compatibilité des navigateurs */}
+        <Route 
+          path="/compatibility-info" 
+          element={
+            loadingErrors['/compatibility-info'] ? 
+              <FallbackComponent 
+                title="Erreur de chargement de la page de compatibilité" 
+                onRetry={() => retryLoading('/compatibility-info')} 
+              /> : 
+              <CompatibilityInfoPage />
+          } 
+        />
+        
+        {/* Route par défaut - redirection vers l'accueil */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
