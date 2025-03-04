@@ -149,33 +149,33 @@ const ButtonContainer = styled(Box)`
 const dimensionDescriptions = {
   extraversion: {
     title: 'Extraversion',
-    high: 'Vous êtes une personne sociable, énergique et à l\'aise en société. Vous recherchez activement les interactions sociales et vous vous épanouissez dans les situations de groupe.',
-    medium: 'Vous maintenez un équilibre entre les moments sociaux et solitaires. Vous pouvez être à l\'aise en société tout en appréciant les moments de calme.',
-    low: 'Vous préférez les environnements calmes et les interactions en petit comité. Vous puisez votre énergie dans des moments de solitude et de réflexion personnelle.'
+    high: 'Vous êtes une personne sociable, énergique et à l\'aise dans les interactions professionnelles. Vous recherchez activement les échanges avec vos collègues et vous vous épanouissez dans les réunions et le travail d\'équipe.',
+    medium: 'Vous maintenez un équilibre entre les moments d\'échange et de concentration individuelle au travail. Vous pouvez être à l\'aise en réunion tout en appréciant les tâches qui demandent de l\'autonomie.',
+    low: 'Vous préférez les environnements de travail calmes et les interactions en petit comité. Vous êtes plus à l\'aise dans les tâches individuelles et puisez votre énergie dans des moments de réflexion personnelle.'
   },
   nevrosisme: {
     title: 'Névrosisme',
-    high: 'Vous pouvez être sensible au stress et aux changements émotionnels. Cette sensibilité peut vous rendre plus empathique mais aussi plus vulnérable aux situations stressantes.',
-    medium: 'Vous gérez généralement bien vos émotions tout en restant sensible aux situations stressantes. Vous maintenez un équilibre émotionnel satisfaisant.',
-    low: 'Vous faites preuve d\'une grande stabilité émotionnelle et d\'une bonne résistance au stress. Vous restez calme et posé(e) même dans des situations difficiles.'
+    high: 'Vous pouvez être sensible au stress professionnel et aux changements dans votre environnement de travail. Cette sensibilité peut vous rendre plus attentif(ve) aux détails mais aussi plus vulnérable face aux défis professionnels.',
+    medium: 'Vous gérez généralement bien vos émotions au travail tout en restant sensible aux situations stressantes. Vous maintenez un équilibre émotionnel satisfaisant face aux défis professionnels.',
+    low: 'Vous faites preuve d\'une grande stabilité émotionnelle et d\'une bonne résistance au stress professionnel. Vous restez calme et posé(e) même dans des situations de travail difficiles ou sous pression.'
   },
   agreabilite: {
     title: 'Agréabilité',
-    high: 'Vous êtes une personne altruiste et bienveillante, toujours prête à aider les autres. Vous privilégiez l\'harmonie dans les relations et faites preuve d\'une grande empathie.',
-    medium: 'Vous savez équilibrer vos besoins personnels avec ceux des autres. Vous êtes capable de coopération tout en maintenant vos limites.',
-    low: 'Vous êtes direct(e) et franc(he) dans vos interactions. Vous privilégiez l\'objectivité et pouvez parfois sembler distant(e) dans vos relations.'
+    high: 'Vous êtes une personne bienveillante et attentive aux besoins de vos collègues. Vous privilégiez l\'harmonie dans les relations professionnelles et faites preuve d\'une grande empathie dans votre environnement de travail.',
+    medium: 'Vous savez équilibrer vos objectifs professionnels avec les besoins de votre équipe. Vous êtes capable de coopération tout en maintenant vos limites dans le cadre professionnel.',
+    low: 'Vous êtes direct(e) et franc(he) dans vos interactions professionnelles. Vous privilégiez l\'efficacité et les résultats, ce qui peut parfois vous faire paraître distant(e) dans vos relations de travail.'
   },
   conscience: {
     title: 'Conscience professionnelle',
-    high: 'Vous êtes très organisé(e) et méthodique dans votre approche du travail. Vous accordez une grande importance à la planification et à l\'atteinte de vos objectifs.',
-    medium: 'Vous savez être organisé(e) quand c\'est nécessaire tout en gardant une certaine flexibilité. Vous équilibrez bien structure et spontanéité.',
-    low: 'Vous préférez une approche plus flexible et spontanée. Vous pouvez être créatif(ve) mais parfois avoir du mal à suivre une routine stricte.'
+    high: 'Vous êtes très organisé(e) et méthodique dans votre approche du travail. Vous accordez une grande importance à la planification, à la rigueur et à l\'atteinte de vos objectifs professionnels.',
+    medium: 'Vous savez être organisé(e) quand c\'est nécessaire tout en gardant une certaine flexibilité au travail. Vous équilibrez bien structure et adaptabilité dans vos missions.',
+    low: 'Vous préférez une approche plus flexible et spontanée au travail. Vous pouvez être créatif(ve) mais parfois avoir du mal à suivre une organisation stricte ou des processus rigides.'
   },
   ouverture: {
     title: 'Ouverture à l\'expérience',
-    high: 'Vous êtes curieux(se) intellectuellement et ouvert(e) aux nouvelles expériences. Vous appréciez l\'art, l\'innovation et les idées abstraites.',
-    medium: 'Vous appréciez un mélange de nouveauté et de familiarité. Vous êtes ouvert(e) aux nouvelles expériences tout en valorisant les approches traditionnelles.',
-    low: 'Vous préférez les approches pratiques et concrètes. Vous appréciez la stabilité et les méthodes éprouvées.'
+    high: 'Vous êtes curieux(se) intellectuellement et ouvert(e) aux innovations dans votre domaine professionnel. Vous appréciez les concepts abstraits et proposez régulièrement des idées nouvelles dans votre travail.',
+    medium: 'Vous appréciez un mélange d\'innovation et de méthodes éprouvées. Vous êtes ouvert(e) aux nouvelles approches professionnelles tout en valorisant les pratiques qui ont fait leurs preuves.',
+    low: 'Vous préférez les approches pratiques et concrètes dans votre travail. Vous appréciez la stabilité et les méthodes éprouvées, privilégiant l\'expérience et les faits aux concepts théoriques.'
   }
 };
 

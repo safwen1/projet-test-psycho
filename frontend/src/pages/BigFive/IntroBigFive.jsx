@@ -190,15 +190,15 @@ const IntroBigFive = () => {
   return (
     <PageContainer>
       <Container>
-        <StyledTitle>Test de personnalité Big Five</StyledTitle>
+        <StyledTitle>Test de personnalité Big Five en contexte professionnel</StyledTitle>
         
         <InfoGrid>
           <InfoCard>
             <Psychology />
             <CardContent>
-              <CardTitle>Découvrez votre personnalité</CardTitle>
+              <CardTitle>Découvrez votre personnalité au travail</CardTitle>
               <CardText>
-                Explorez les cinq dimensions fondamentales de votre personnalité : 
+                Explorez les cinq dimensions fondamentales de votre personnalité dans un contexte professionnel : 
                 Extraversion, Névrosisme, Agréabilité, Conscience et Ouverture.
               </CardText>
             </CardContent>
@@ -209,7 +209,7 @@ const IntroBigFive = () => {
             <CardContent>
               <CardTitle>Durée du test</CardTitle>
               <CardText>
-                Le test comprend 50 questions et prend environ 10-15 minutes à compléter.
+                Le test comprend 50 questions orientées vers le milieu professionnel et prend environ 10-15 minutes à compléter.
                 Prenez votre temps pour répondre honnêtement.
               </CardText>
             </CardContent>
@@ -220,7 +220,7 @@ const IntroBigFive = () => {
             <CardContent>
               <CardTitle>Comment répondre</CardTitle>
               <CardText>
-                Pour chaque question, indiquez votre degré d'accord sur une échelle de 1 à 5.
+                Pour chaque affirmation concernant votre comportement au travail, indiquez votre degré d'accord sur une échelle de 1 à 5.
                 Il n'y a pas de bonnes ou mauvaises réponses.
               </CardText>
             </CardContent>
@@ -231,7 +231,7 @@ const IntroBigFive = () => {
             <CardContent>
               <CardTitle>Résultats détaillés</CardTitle>
               <CardText>
-                Obtenez une analyse approfondie de votre profil de personnalité
+                Obtenez une analyse approfondie de votre profil de personnalité en milieu professionnel
                 avec des explications détaillées pour chaque dimension.
               </CardText>
             </CardContent>
