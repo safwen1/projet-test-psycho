@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
 import { Switch, FormControlLabel } from '@mui/material';
 
@@ -272,7 +271,6 @@ const IntroRiasec = () => {
             Commencer le test
           </StartButton>
         </LeftSection>
-        <UserImage src={userImage} alt="User illustration" />
         <SenseiImage src={senseiStyle} alt="Style Sensei" />
       </Container>
       <FooterBar />
