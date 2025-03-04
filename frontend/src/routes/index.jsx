@@ -51,6 +51,14 @@ const ResultBigFive = lazyRoute('pages/BigFive/ResultBigFive', {
   fallback: 'Chargement des résultats du test Big Five...'
 });
 
+// Page de résultat générique
+const Resultat = lazyRoute('pages/Resultat/Resultat', { 
+  fallback: 'Chargement de la page de résultat...',
+  simplified: true,
+  title: 'Résultat',
+  description: 'Résultat de votre test psychométrique'
+});
+
 // Composant de secours en cas d'échec du chargement
 const FallbackComponent = ({ title, message, onRetry }) => (
   <div className="fallback-component">
@@ -210,6 +218,9 @@ const AppRoutes = () => {
         />
         <Route path="/bigfive/test" element={<AppBigFiveTest />} />
         <Route path="/bigfive/results" element={<ResultBigFive />} />
+        
+        {/* Page de résultat générique */}
+        <Route path="/resultat" element={<Resultat />} />
         
         {/* Route par défaut en cas d'URL non reconnue */}
         <Route path="*" element={<Navigate to="/" replace />} />

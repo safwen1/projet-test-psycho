@@ -381,7 +381,7 @@ const AppBigFiveTest = () => {
           })
         });
 
-        // Naviguer vers la page de résultats avec les données
+        // Naviguer vers la page de résultats actuelle avec les données
         navigate('/bigfive/results', {
           state: {
             scores,
@@ -390,6 +390,12 @@ const AppBigFiveTest = () => {
             completedAt
           }
         });
+
+        /* 
+        // Redirection vers la page de résultat générique
+        // À activer ultérieurement
+        navigate('/resultat');
+        */
       } catch (error) {
         console.error('Erreur lors de la soumission du test:', error);
         toast.error('Une erreur est survenue lors de la soumission du test');

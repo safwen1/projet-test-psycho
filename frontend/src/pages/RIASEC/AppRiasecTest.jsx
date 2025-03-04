@@ -784,6 +784,7 @@ const AppRiasecTest = () => {
           })
         });
 
+        // Redirection vers la page de résultat actuelle
         navigate('/riasec/results', { 
           state: { 
             result: {
@@ -795,6 +796,12 @@ const AppRiasecTest = () => {
             duration: duration
           } 
         });
+
+        /* 
+        // Redirection vers la page de résultat générique
+        // À activer ultérieurement
+        navigate('/resultat');
+        */
       } catch (error) {
         console.error('Erreur:', error);
         toast.error('Erreur lors de la soumission du test');
