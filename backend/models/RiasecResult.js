@@ -52,7 +52,7 @@ const riasecResultSchema = new mongoose.Schema({
         of: [String]
       }
     },
-    grokAnalysis: {
+    iaAnalysis: {
       type: mongoose.Schema.Types.Mixed,
       default: null
     }
