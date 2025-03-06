@@ -8,8 +8,12 @@ import {
   Paper,
   Grid,
   Button,
-  Divider
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Radar,
   RadarChart,
@@ -323,6 +327,30 @@ const ScoreCell = styled.div`
   border-radius: 4px;
 `;
 
+const GrokAnalysisSection = styled(Paper)`
+  padding: 1.5rem;
+  margin-top: 2rem;
+  background: linear-gradient(to right, #f3e5f5, #fff);
+  border-left: 4px solid #9c27b0;
+`;
+
+const GrokTitle = styled(Typography)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  
+  &::before {
+    content: '🤖';
+    font-size: 1.5rem;
+  }
+`;
+
+const GrokContent = styled(Typography)`
+  line-height: 1.6;
+  white-space: pre-line;
+`;
+
 const ResultRiasec = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -462,14 +490,44 @@ const ResultRiasec = () => {
           </TableContent>
         </ScoreTable>
 
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-          <Button
-            variant="contained"
-            color="primary"
+        {result.grokAnalysis && (
+          <GrokAnalysisSection elevation={3}>
+            <GrokTitle variant="h6">
+              Analyse IA de votre profil RIASEC
+            </GrokTitle>
+            <Divider sx={{ mb: 2 }} />
+            <Accordion defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="grok-analysis-content"
+                id="grok-analysis-header"
+              >
+                <Typography variant="subtitle1">Analyse détaillée par Grok3</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <GrokContent variant="body1">
+                  {result.grokAnalysis.choices?.[0]?.message?.content || 
+                   "L'analyse IA n'est pas disponible pour le moment."}
+                </GrokContent>
+              </AccordionDetails>
+            </Accordion>
+          </GrokAnalysisSection>
+        )}
+
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Button 
+            variant="outlined" 
+            color="primary" 
             onClick={() => navigate('/')}
-            sx={{ mr: 2 }}
           >
             Retour à l'accueil
+          </Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => window.print()}
+          >
+            Imprimer les résultats
           </Button>
         </Box>
       </Container>

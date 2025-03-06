@@ -344,7 +344,7 @@ const AppBigFiveTest = () => {
         const completedAt = new Date().toISOString();
 
         // Envoyer les données au backend local
-        await fetch(`${import.meta.env.VITE_API_URL}/bigfive/submit`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/bigfive/submit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -355,6 +355,8 @@ const AppBigFiveTest = () => {
             duration
           })
         });
+
+        const data = await response.json();
 
         // Appel à l'API externe
         await fetch('https://dev.app.sensei-france.fr/psycho_tests/new_results', {
@@ -387,7 +389,8 @@ const AppBigFiveTest = () => {
             scores,
             userAnswers: answers,
             duration,
-            completedAt
+            completedAt,
+            grokAnalysis: data.result.grokAnalysis || null
           }
         });
 

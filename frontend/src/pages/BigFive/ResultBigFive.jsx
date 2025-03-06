@@ -9,7 +9,12 @@ import {
   Grid,
   Button,
   CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Divider
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Radar,
   RadarChart,
@@ -144,6 +149,33 @@ const ButtonContainer = styled(Box)`
   @media print {
     display: none !important;
   }
+`;
+
+const GrokAnalysisSection = styled(Paper)`
+  padding: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(to right, #fff8ef, #fff);
+  border-left: 4px solid #ff9800;
+  border-radius: 15px !important;
+`;
+
+const GrokTitle = styled(Typography)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #ff9800;
+  
+  &::before {
+    content: '🤖';
+    font-size: 1.5rem;
+  }
+`;
+
+const GrokContent = styled(Typography)`
+  line-height: 1.6;
+  white-space: pre-line;
 `;
 
 const dimensionDescriptions = {
@@ -333,6 +365,38 @@ const ResultBigFive = () => {
                 </DimensionCard>
               ))}
             </Grid>
+
+            {results.grokAnalysis && (
+              <Box sx={{ px: 3, pb: 3 }}>
+                <GrokAnalysisSection elevation={2}>
+                  <GrokTitle variant="h6">
+                    Analyse IA de votre profil de personnalité
+                  </GrokTitle>
+                  <Divider sx={{ mb: 2, backgroundColor: 'rgba(255, 152, 0, 0.2)' }} />
+                  <Accordion defaultExpanded>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon sx={{ color: '#ff9800' }} />}
+                      aria-controls="grok-analysis-content"
+                      id="grok-analysis-header"
+                      sx={{ 
+                        backgroundColor: 'rgba(255, 152, 0, 0.05)',
+                        borderRadius: '8px'
+                      }}
+                    >
+                      <Typography variant="subtitle1" sx={{ color: '#ff9800' }}>
+                        Analyse détaillée par Grok3
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <GrokContent variant="body1">
+                        {results.grokAnalysis.choices?.[0]?.message?.content || 
+                         "L'analyse IA n'est pas disponible pour le moment."}
+                      </GrokContent>
+                    </AccordionDetails>
+                  </Accordion>
+                </GrokAnalysisSection>
+              </Box>
+            )}
 
             <Grid item xs={12}>
               <ButtonContainer sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4, mb: 2 }}>

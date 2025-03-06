@@ -1,4 +1,5 @@
 const RiasecResult = require('../models/RiasecResult');
+const grokService = require('../services/grokService');
 
 // Soumettre un nouveau test RIASEC
 exports.submitTest = async (req, res) => {
@@ -18,6 +19,17 @@ exports.submitTest = async (req, res) => {
       }
     });
 
+    // Appel à l'API Grok3 pour analyse avancée
+    const grokAnalysis = await grokService.analyzeRiasecResponses({
+      scores: scores,
+      responses: responses
+    });
+
+    // Ajouter l'analyse Grok au résultat si disponible
+    if (grokAnalysis && !grokAnalysis.error) {
+      result.result.grokAnalysis = grokAnalysis;
+    }
+
     // Sauvegarder le résultat
     await result.save();
 
@@ -27,7 +39,8 @@ exports.submitTest = async (req, res) => {
       result: {
         scores: result.result.scores,
         themes: result.result.themes,
-        predominant: result.result.predominant
+        predominant: result.result.predominant,
+        grokAnalysis: result.result.grokAnalysis || null
       },
       duration: result.metadata.duration
     });

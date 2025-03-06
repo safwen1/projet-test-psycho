@@ -791,7 +791,8 @@ const AppRiasecTest = () => {
               scores: scores.total,
               themes: scores.themes,
               predominant: scores.predominant,
-              graphData: graphData
+              graphData: graphData,
+              grokAnalysis: data.result.grokAnalysis || null
             },
             duration: duration
           } 
