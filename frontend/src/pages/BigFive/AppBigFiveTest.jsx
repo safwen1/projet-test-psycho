@@ -15,6 +15,7 @@ import { VolumeUp, Timer } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BIG_FIVE_QUESTIONS } from '../../constants/BigFive/data';
+import usePreventNavigation from '../../hooks/usePreventNavigation';
 
 const fadeIn = keyframes`
   from {
@@ -227,6 +228,56 @@ const AppBigFiveTest = () => {
   const [showTimer, setShowTimer] = useState(location.state?.showTimer ?? true);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  // Activation de la prévention de navigation pendant le test
+  usePreventNavigation(
+    true,
+    "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?",
+    "Quitter le test Big Five ?"
+  );
+
+  // Solution directe pour bloquer le rechargement de la page
+  useEffect(() => {
+    // Fonction pour intercepter l'événement beforeunload (fermeture d'onglet, rechargement)
+    const handleBeforeUnload = (event) => {
+      const message = "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?";
+      event.preventDefault();
+      event.returnValue = message;
+      return message;
+    };
+    
+    // Fonction pour intercepter les touches de rechargement (F5, Ctrl+R)
+    const handleKeyDown = (event) => {
+      // F5 key
+      if (event.key === 'F5') {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec F5 bloqué');
+        return false;
+      }
+      
+      // Ctrl+R ou Cmd+R (Mac)
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'r' || event.keyCode === 82)) {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec Ctrl+R bloqué');
+        return false;
+      }
+    };
+    
+    // Ajoute les écouteurs d'événements au niveau global
+    window.addEventListener('beforeunload', handleBeforeUnload, { capture: true });
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    
+    console.log('Prévention de rechargement activée dans AppBigFiveTest');
+    
+    // Nettoie les écouteurs lors du démontage du composant
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload, { capture: true });
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+      console.log('Prévention de rechargement désactivée dans AppBigFiveTest');
+    };
+  }, []);
+
   useEffect(() => {
     setStartTime(Date.now());
     const timer = setInterval(() => {
@@ -293,7 +344,7 @@ const AppBigFiveTest = () => {
         const completedAt = new Date().toISOString();
 
         // Envoyer les données au backend local
-        await fetch(`${import.meta.env.VITE_API_URL}/bigfive/submit`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/bigfive/submit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -304,6 +355,8 @@ const AppBigFiveTest = () => {
             duration
           })
         });
+
+        const data = await response.json();
 
         // Appel à l'API externe
         await fetch('https://dev.app.sensei-france.fr/psycho_tests/new_results', {
@@ -330,15 +383,22 @@ const AppBigFiveTest = () => {
           })
         });
 
-        // Naviguer vers la page de résultats avec les données
+        // Naviguer vers la page de résultats actuelle avec les données
         navigate('/bigfive/results', {
           state: {
             scores,
             userAnswers: answers,
             duration,
-            completedAt
+            completedAt,
+            grokAnalysis: data.result.grokAnalysis || null
           }
         });
+
+        /* 
+        // Redirection vers la page de résultat générique
+        // À activer ultérieurement
+        navigate('/resultat');
+        */
       } catch (error) {
         console.error('Erreur lors de la soumission du test:', error);
         toast.error('Une erreur est survenue lors de la soumission du test');
@@ -424,7 +484,7 @@ const AppBigFiveTest = () => {
             onChange={(e) => handleAnswer(e.target.value)}
             sx={{ mt: 3 }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {[1, 2, 3, 4, 5].map((value) => (
                 <FormControlLabel
                   key={value}
@@ -448,7 +508,7 @@ const AppBigFiveTest = () => {
                   }
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '10px 20px',
+                    padding: '8px 16px',
                     borderRadius: '8px',
                     transition: 'all 0.3s ease',
                     '&:hover': {

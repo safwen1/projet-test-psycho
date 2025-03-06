@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
 import { Switch, FormControlLabel } from '@mui/material';
 
@@ -201,9 +200,9 @@ const IntroRiasec = () => {
     <PageContainer>
       <Container>
         <LeftSection>
-          <StyledTitle>Test d'Intérêts Professionnels RIASEC</StyledTitle>
+          <StyledTitle>Test d'Intérêts Professionnels</StyledTitle>
           <Description>
-            Le test RIASEC évalue vos intérêts professionnels à travers six dimensions fondamentales :
+            Le test Intérêts professionnels évalue vos intérêts professionnels à travers six dimensions fondamentales :
             <br/><br/>
             • Réaliste (R) : Activités pratiques et techniques
             <br/>
@@ -229,7 +228,7 @@ const IntroRiasec = () => {
             <br/>
             • Personnalité : Cochez les traits de caractère qui vous correspondent (10 propositions par dimension)
             <br/><br/>
-            Total : 300 questions (50 questions × 6 dimensions)
+            Total : 24 questions
             <br/><br/>
             Système de notation :
             <br/>
@@ -243,7 +242,7 @@ const IntroRiasec = () => {
             <br/>
             &nbsp;&nbsp;&nbsp;- Fort (3 points)
             <br/><br/>
-            Durée moyenne : 45-50 minutes
+            Ce questionnaire a pour objectif d’identifier les types d’activités et d’environnements professionnels qui vous correspondent le mieux. Il repose sur des recherches en psychologie de l’orientation et ne comporte pas de bonnes ou mauvaises réponses. Répondez spontanément en fonction de ce qui vous attire réellement. Vos réponses seront analysées pour vous proposer un profil personnalisé. La passation dure environ 20 à 30 minutes. (on expliquera la partie "théorique" dans le rapport)
             <br/><br/>
             Conseils :
             <br/>
@@ -272,7 +271,6 @@ const IntroRiasec = () => {
             Commencer le test
           </StartButton>
         </LeftSection>
-        <UserImage src={userImage} alt="User illustration" />
         <SenseiImage src={senseiStyle} alt="Style Sensei" />
       </Container>
       <FooterBar />

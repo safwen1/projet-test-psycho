@@ -1,4 +1,5 @@
 const BigFiveResult = require('../models/BigFiveResult');
+const grokService = require('../services/grokService');
 
 // Soumettre un nouveau test Big Five
 exports.submitTest = async (req, res) => {
@@ -16,6 +17,24 @@ exports.submitTest = async (req, res) => {
       }
     });
 
+    // Appel à l'API Grok3 pour analyse avancée
+    const grokAnalysis = await grokService.analyzeBigFiveResponses({
+      scores: scores,
+      responses: responses
+    });
+
+    // Ajouter l'analyse Grok au résultat si disponible
+    if (grokAnalysis && !grokAnalysis.error) {
+      // Stocker uniquement l'analyse textuelle, sans le modèle et l'usage
+      result.result.grokAnalysis = grokAnalysis.analysis;
+      console.log('Analyse Grok ajoutée au résultat');
+    } else if (grokAnalysis && grokAnalysis.error) {
+      console.error('Erreur lors de l\'analyse Grok:', grokAnalysis.message);
+      // On continue sans l'analyse Grok
+    } else {
+      console.warn('Aucune analyse Grok disponible - vérifiez la configuration de l\'API');
+    }
+
     // Sauvegarder le résultat
     await result.save();
 
@@ -24,7 +43,8 @@ exports.submitTest = async (req, res) => {
       success: true,
       result: {
         scores: result.result.scores,
-        userAnswers: Object.fromEntries(result.result.userAnswers)
+        userAnswers: Object.fromEntries(result.result.userAnswers),
+        grokAnalysis: result.result.grokAnalysis || null
       },
       duration: result.metadata.duration
     });

@@ -51,6 +51,10 @@ const riasecResultSchema = new mongoose.Schema({
         type: Map,
         of: [String]
       }
+    },
+    grokAnalysis: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null
     }
   },
   metadata: {

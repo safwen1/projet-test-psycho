@@ -10,6 +10,7 @@ export const useUserContext = () => {
 export const UserProvider = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [token, setToken] = useState(null);
+    const [mail_consultant, setMailConsultant] = useState(null);
     const [email, setEmail] = useState(null);
     const [test, setTest] = useState(null);
     const [recordID, setRecordID] = useState(null);
@@ -39,6 +40,7 @@ export const UserProvider = ({ children }) => {
 
         initializeValue("user_id", setUserId);
         initializeValue("token", setToken);
+        initializeValue("mail_consultant", setMailConsultant);
         initializeValue("email", setEmail);
         initializeValue("test", setTest);
         initializeValue("project_task_id", setProjectTaskId);
@@ -52,7 +54,7 @@ export const UserProvider = ({ children }) => {
     }, [location.search, navigate]);
 
     return (
-        <UserContext.Provider value={{ userId, recordID, token, email, test, projectTaskId, name, firstname }}>
+        <UserContext.Provider value={{ userId, recordID, token, mail_consultant, email, test, projectTaskId, name, firstname }}>
             {children}
         </UserContext.Provider>
     );

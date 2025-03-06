@@ -15,6 +15,10 @@ const bigFiveResultSchema = new mongoose.Schema({
         content: String,
         response: Number
       }
+    },
+    grokAnalysis: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null
     }
   },
   metadata: {

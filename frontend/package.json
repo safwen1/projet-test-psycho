@@ -33,7 +33,8 @@
     "react-router-dom": "^6.9.0",
     "react-toastify": "^10.0.6",
     "recharts": "^2.15.1",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.26.5",

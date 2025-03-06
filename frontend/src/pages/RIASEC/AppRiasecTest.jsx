@@ -11,6 +11,7 @@ import {
   RIASEC_LETTERS
 } from '../../constants/RIASEC/data';
 import styleSensei from '../../images/style-sensei.png';
+import usePreventNavigation from '../../hooks/usePreventNavigation';
 
 const fadeIn = keyframes`
   from {
@@ -238,14 +239,14 @@ const SectionTitle = styled.h2`
 const CheckboxGroup = styled(FormGroup)`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  gap: 0rem;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 `;
 
 const StyledCheckbox = styled(FormControlLabel)`
-  margin: 0.5rem;
-  padding: 0.5rem;
+  margin: 0.25rem;
+  padding: 0.25rem;
   border-radius: 8px;
   transition: background-color 0.3s ease;
 
@@ -463,6 +464,56 @@ const AppRiasecTest = () => {
   const [responses, setResponses] = useState({});
   const [isReading, setIsReading] = useState(false);
 
+  // Activation de la prévention de navigation pendant le test
+  usePreventNavigation(
+    true,
+    "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?",
+    "Quitter le test Intérêts professionnels ?"
+  );
+  
+  // Solution directe pour bloquer le rechargement de la page
+  useEffect(() => {
+    // Fonction pour intercepter l'événement beforeunload (fermeture d'onglet, rechargement)
+    const handleBeforeUnload = (event) => {
+      const message = "Si vous quittez maintenant, toutes vos réponses seront perdues. Voulez-vous vraiment abandonner le test ?";
+      event.preventDefault();
+      event.returnValue = message;
+      return message;
+    };
+    
+    // Fonction pour intercepter les touches de rechargement (F5, Ctrl+R)
+    const handleKeyDown = (event) => {
+      // F5 key
+      if (event.key === 'F5') {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec F5 bloqué');
+        return false;
+      }
+      
+      // Ctrl+R ou Cmd+R (Mac)
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'r' || event.keyCode === 82)) {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('Rechargement avec Ctrl+R bloqué');
+        return false;
+      }
+    };
+    
+    // Ajoute les écouteurs d'événements au niveau global
+    window.addEventListener('beforeunload', handleBeforeUnload, { capture: true });
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    
+    console.log('Prévention de rechargement activée dans AppRiasecTest');
+    
+    // Nettoie les écouteurs lors du démontage du composant
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload, { capture: true });
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+      console.log('Prévention de rechargement désactivée dans AppRiasecTest');
+    };
+  }, []);
+
   useEffect(() => {
     setStartTime(Date.now());
     const timer = setInterval(() => {
@@ -573,9 +624,9 @@ const AppRiasecTest = () => {
                 value={getRadioValue(question.id)}
                 onChange={(e) => handleRadioChange(question.id, e.target.value)}
               >
-                <StyledRadio value="1" control={<Radio />} label="Faible" />
-                <StyledRadio value="2" control={<Radio />} label="Moyen" />
-                <StyledRadio value="3" control={<Radio />} label="Fort" />
+                <StyledRadio value="1" control={<Radio />} label=" Je pense ne pas être bon(ne) dans cette tâche" />
+                <StyledRadio value="2" control={<Radio />} label="Je pense être moyennement compétent(e)." />
+                <StyledRadio value="3" control={<Radio />} label="Je pense être très compétent(e)." />
               </RadioButtonsGroup>
             </QuestionItem>
           ))}
@@ -733,17 +784,25 @@ const AppRiasecTest = () => {
           })
         });
 
+        // Redirection vers la page de résultat actuelle
         navigate('/riasec/results', { 
           state: { 
             result: {
               scores: scores.total,
               themes: scores.themes,
               predominant: scores.predominant,
-              graphData: graphData
+              graphData: graphData,
+              grokAnalysis: data.result.grokAnalysis || null
             },
             duration: duration
           } 
         });
+
+        /* 
+        // Redirection vers la page de résultat générique
+        // À activer ultérieurement
+        navigate('/resultat');
+        */
       } catch (error) {
         console.error('Erreur:', error);
         toast.error('Erreur lors de la soumission du test');
@@ -841,10 +900,6 @@ const AppRiasecTest = () => {
             Thème : {getCurrentTheme().label} - Section {currentLetter}
           </ThemeText>
         </ProgressContainer>
-
-        <SectionTitle>
-          {RIASEC_LETTERS.find(l => l.id === currentLetter).label}
-        </SectionTitle>
 
         <QuestionContainer>
           <Typography variant="h6" style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative' }}>

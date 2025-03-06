@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import TestCard from '../../components/TestCard/TestCard';
 import { TestIcons } from '../../components/icons/TestIcons';
 import { RiasecIcon } from '../../components/icons/TestIcons';
+import { useUserContext } from '../../context/userContext';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PageContainer = styled.div`
   min-height: calc(100vh - 70px);
@@ -146,12 +149,12 @@ const CategoryButton = styled.button`
 const tests = [
   {
     id: 'riasec',
-    title: 'Test RIASEC',
+    title: 'Test Intérêts professionnels',
     description: 'Découvrez vos intérêts professionnels à travers 300 questions réparties en 4 thèmes. Ce test vous aide à identifier vos domaines de prédilection selon la méthode RIASEC (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Durée : 45-50 minutes.',
     icon: RiasecIcon,
     path: '/riasec',
-    duration: '45-50 minutes',
-    questionCount: 300,
+    duration: '20-30 minutes',
+    questionCount: 24,
     accentColor: '#9c27b0',
     category: 'personality'
   },
@@ -190,8 +193,22 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const { userId, mail_consultant } = useUserContext();
+
+  const isUserAuthorized = userId && mail_consultant;
 
   const handleStartTest = (testPath) => {
+    if (!isUserAuthorized) {
+      toast.error('Vous devez être identifié pour accéder aux tests. Veuillez contacter votre consultant.', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
     navigate(testPath);
   };
 
@@ -204,6 +221,7 @@ const Home = () => {
 
   return (
     <PageContainer>
+      <ToastContainer />
       <Header>
         <Title>Bibliothèque de Tests Psychométriques</Title>
         <Subtitle>
@@ -246,6 +264,7 @@ const Home = () => {
             accentColor={test.accentColor}
             onStart={() => test.comingSoon ? null : handleStartTest(test.path)}
             comingSoon={test.comingSoon}
+            disabled={!isUserAuthorized && !test.comingSoon}
           />
         ))}
       </TestsGrid>
