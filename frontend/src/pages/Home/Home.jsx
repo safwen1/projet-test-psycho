@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
 import { useUserContext } from "../../context/userContext.jsx";
+import useError from '../../hooks/useError';
+import api from '../../utils/api';
 
 const SenseiImage = styled.img`
   position: absolute;
@@ -25,6 +27,11 @@ const StyledTitle = styled.h1`
   @media (max-width: 779px) {
     font-size: 2rem;
   }
+  
+  @media (max-width: 480px) {
+    font-size: 1.8rem;
+    text-align: center;
+  }
 `;
 
 const UserImage = styled.img`
@@ -42,44 +49,138 @@ const UserImage = styled.img`
   }
 `;
 
+// Composant de conteneur responsive
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px;
+  background-color: white;
+  border: 1px solid #000;
+  border-radius: 50px;
+  width: 90%;
+  margin: 30px auto;
+  
+  @media (max-width: 768px) {
+    padding: 30px;
+    width: 85%;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 20px;
+    width: 90%;
+    border-radius: 30px;
+  }
+`;
+
+// Section de contenu responsive
+const ContentSection = styled.div`
+  width: 90%;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+// Style de description responsive
+const Description = styled.p`
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #555;
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+`;
+
+// Bouton responsive
+const Button = styled.button`
+  background-color: #fabc1c;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border-radius: 30px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.disabled ? 0.6 : 1};
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    background-color: #e6a71a;
+    transform: translateY(-2px);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 10px 20px;
+    font-size: 1rem;
+    display: block;
+    margin: 0 auto;
+  }
+`;
+
 const Home = () => {
     const navigate = useNavigate();
     const { recordID, email, name, firstname } = useUserContext();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    
+    // Utilisation de notre hook de gestion d'erreur
+    const { executeWithErrorHandling, showWarningToast } = useError();
 
     useEffect(() => {
         if (!recordID || !email || !name || !firstname) {
             setErrorMessage("Vous n'avez pas toutes les informations requises pour commencer le test, veuillez vous rapprocher de votre consultant");
+            showWarningToast("Vous n'avez pas toutes les informations requises pour commencer le test, veuillez vous rapprocher de votre consultant");
             setIsButtonDisabled(true);
         } else {
             const checkHsObjectId = async (hsObjectId) => {
-                try {
-                    const res = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/checkHsObjectId/${hsObjectId}`);
-                    const data = await res.json();
-                    return data.exists;
-                } catch (err) {
-                    console.error('Erreur lors de la vérification de hs_object_id:', err);
-                    return null; // Indique une erreur
-                }
+                return executeWithErrorHandling(async () => {
+                    try {
+                        // Utilisation de notre utilitaire API au lieu du fetch direct
+                        const response = await api.get(`/personality-test/checkHsObjectId/${hsObjectId}`);
+                        if (response.success) {
+                            return response.data.exists;
+                        } 
+                        return null;
+                    } catch (err) {
+                        console.error('Erreur lors de la vérification de hs_object_id:', err);
+                        return null; // Indique une erreur
+                    }
+                });
             };
 
             checkHsObjectId(recordID).then(exists => {
                 if (exists === true) {
-                    setErrorMessage("Impossible de faire le test deux fois pour le même utilsateur");
+                    const message = "Impossible de faire le test deux fois pour le même utilisateur";
+                    setErrorMessage(message);
+                    showWarningToast(message);
                     setIsButtonDisabled(true);
                 } else if (exists === false) {
                     setErrorMessage("");
                     setIsButtonDisabled(false);
                 } else {
-                    setErrorMessage("Une erreur est survenue lors de la vérification des informations. Veuillez réessayer.");
+                    const message = "Une erreur est survenue lors de la vérification des informations. Veuillez réessayer.";
+                    setErrorMessage(message);
+                    showWarningToast(message);
                     setIsButtonDisabled(true);
                 }
             });
         }
-    }, [recordID, email, name, firstname]);
-
+    }, [recordID, email, name, firstname, showWarningToast, executeWithErrorHandling]);
 
     const pageStyle = {
         backgroundColor: '#fdf6f1',
@@ -90,106 +191,36 @@ const Home = () => {
         flexDirection: 'column',
     };
 
-    const containerStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '50px',
-        backgroundColor:'white',
-        border: '1px solid #000',
-        borderRadius: '50px',
-        width: '90%',
-        margin: '30px auto',
-    };
-
-    const leftSectionStyle = {
-        width: '90%',
-    };
-
-    const descriptionStyle = {
-        fontSize: '1.2rem',
-        marginBottom: '30px',
-        color: '#555',
-    };
-
-    const buttonStyle = {
-        backgroundColor: '#fabc1c',
-        color: 'white',
-        border: 'none',
-        padding: '15px 30px',
-        fontSize: '1.2rem',
-        borderRadius: '5px',
-        cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
-        transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
-        boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)',
-        opacity: isButtonDisabled ? 0.5 : 1,
-    };
-
-    const buttonHoverStyle = {
-        backgroundColor: '#e6a71a',
-    };
-
-    const buttonActiveStyle = {
-        transform: 'scale(0.95)',
-    };
-
-    const footerBarStyle = {
-        backgroundColor: 'black',
-        height: '30px',
-        width: '100%',
-        position: 'fixed',
-        bottom: '0',
-        left: '0',
-    };
-
     const handleClick = () => {
-        if (isButtonDisabled) {
-            return;
-        } else {
+        if (!isButtonDisabled) {
             navigate('/mbti');
+        } else {
+            // Utiliser notre système pour afficher une erreur quand le bouton est cliqué alors qu'il est désactivé
+            showWarningToast(errorMessage || "Vous ne pouvez pas accéder au test pour le moment.");
         }
     };
 
     return (
         <div style={pageStyle}>
-            <div style={containerStyle}>
-                <div style={leftSectionStyle}>
-                    <StyledTitle>Test de personnalité</StyledTitle>
-                    <p style={descriptionStyle}>
-                        Ce test a pour vocation de faire le point sur les éléments clés de votre personnalité, nous permettant d'adapter au plus près nos accompagnements.
-                        <br/><br/>
-                        Ce test utilise le principe de base du MBTI (Myers Briggs Type Indicator) qui fonctionne sur la base des 16 personnalités.
-                        <br/><br/>
-                        Consignes et durée de passation : Réaliser le test seul, au calme. Il n'y a pas de bonnes ou de mauvaises réponses. Répondre aux questions de la manière la plus spontanée possible. Durée moyenne : 10 minutes pour 16 questions.
-                        <br/><br/>
-                        Résultats : À la fin du test, une typologie de Briggs vous sera attribuée sous la forme de Lettre + Couleur.
-                    </p>
-                    {errorMessage && (<p style={{ width: '85%', color: 'red', fontWeight: 'bold', marginBottom: '30px', fontSize: '1.2rem' }}>{errorMessage}</p>)}
-                    <button
-                        style={buttonStyle}
-                        onMouseOver={(e) => {
-                            if (!isButtonDisabled) {
-                                e.target.style.backgroundColor = buttonHoverStyle.backgroundColor;
-                            }
-                        }}
-                        onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
-                        onMouseDown={(e) => {
-                            if (!isButtonDisabled) {
-                                e.target.style.transform = buttonActiveStyle.transform;
-                            }
-                        }}
-                        onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
-                        onClick={handleClick}
-                        disabled={isButtonDisabled}
-                    >
+            <SenseiImage src={senseiStyle} alt="style sensei"/>
+            <Container>
+                <ContentSection>
+                    <StyledTitle>Test de Personnalité</StyledTitle>
+                    <Description>
+                        <strong>Bienvenue !</strong> Vous allez débuter un test de personnalité qui vous aidera à mieux vous connaître. 
+                        <br /><br />
+                        Ce test contient 30 questions à choix multiples. Vous serez confronté à des situations du quotidien professionnel pour lesquelles vous devrez choisir la réponse qui vous correspond le mieux. Répondez honnêtement afin d'obtenir un résultat précis.
+                        <br /><br />
+                        À la fin du test, vous recevrez un rapport détaillé sur votre personnalité, comprenant des caractéristiques dominantes, des forces et des points d'amélioration potentiels.
+                        <br /><br />
+                        <span style={{color: 'red', fontWeight: 'bold'}}>{errorMessage}</span>
+                    </Description>
+                    <Button onClick={handleClick} disabled={isButtonDisabled}>
                         Commencer le test
-                    </button>
-                </div>
-                <UserImage src={userImage} alt="Illustration" />
-                <SenseiImage src={senseiStyle} alt="Illustration" />
-            </div>
-
-            <div style={footerBarStyle}></div>
+                    </Button>
+                </ContentSection>
+                <UserImage src={userImage} alt="User portrait"/>
+            </Container>
         </div>
     );
 };

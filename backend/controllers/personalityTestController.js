@@ -1,5 +1,7 @@
 const ResultsPersonalityTest = require('../models/ResultsPersonalityTest');
 const OpenAI = require('openai');
+const { ValidationError, ExternalServiceError, InternalError } = require('../config/error');
+const logger = require('../utils/logger');
 
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -11,52 +13,73 @@ const {launch} = require("puppeteer");
 const fs = require("fs");
 const path = require('path');
 
-exports.saveHubspotTest = async (req, res) => {
+exports.saveHubspotTest = async (req, res, next) => {
     try {
         const { body } = req;
 
-        console.log('body recu');
+        logger.info('Réception d\'une requête pour sauvegarder un test', { route: 'saveHubspotTest' });
+        
         if (!body) {
-            return res.status(400).json({ error: 'Aucun corps de requête fourni.' });
+            logger.warn('Requête reçue sans corps', { route: 'saveHubspotTest' });
+            throw new ValidationError('Aucun corps de requête fourni.');
         }
 
-        const response = await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then((data) => {
-            res.status(200).json({status : 'success'})
-        })
-        .catch((error) => {
-            console.error('Erreur lors de l\'envoi à HubSpot:', error);
-            res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
-        })
-
-
-
+        try {
+            const response = await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            logger.info('Test envoyé avec succès à HubSpot', { route: 'saveHubspotTest' });
+            res.status(200).json({ status: 'success' });
+        } catch (error) {
+            logger.error('Erreur lors de l\'envoi à HubSpot', {
+                route: 'saveHubspotTest',
+                errorMessage: error.message,
+                statusCode: error.response?.status
+            });
+            
+            // Erreur spécifique pour les problèmes avec le service externe
+            throw new ExternalServiceError('Erreur lors de l\'envoi à HubSpot', {
+                originalError: error.message,
+                statusCode: error.response?.status,
+                requestData: body
+            });
+        }
     } catch (error) {
-        console.error('Erreur lors de l\'envoi à HubSpot:', error);
-        res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
+        // Passer l'erreur au middleware de gestion d'erreur
+        next(error);
     }
 }
 
 async function generatePDF(templatePath, replacements, pdfName) {
-    const browser = await launch();
-    const page = await browser.newPage();
+    try {
+        const browser = await launch();
+        const page = await browser.newPage();
 
-    let template = fs.readFileSync(templatePath, 'utf8');
-    for (const key in replacements) {
-        template = template.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+        let template = fs.readFileSync(templatePath, 'utf8');
+        for (const key in replacements) {
+            template = template.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+        }
+
+        await page.setContent(template, { waitUntil: 'networkidle0' });
+
+        const pdfPath = path.join(__dirname, '../pdf', pdfName);
+        await page.pdf({ path: pdfPath, format: 'A4' });
+
+        await browser.close();
+        return pdfPath;
+    } catch (error) {
+        logger.error('Erreur lors de la génération du PDF', {
+            templatePath,
+            pdfName,
+            errorMessage: error.message
+        });
+        throw new InternalError('Impossible de générer le PDF', {
+            originalError: error.message
+        });
     }
-
-    await page.setContent(template, { waitUntil: 'networkidle0' });
-
-    const pdfPath = path.join(__dirname, '../pdf', pdfName);
-    await page.pdf({ path: pdfPath, format: 'A4' });
-
-    await browser.close();
-    return pdfPath;
 }
 
 exports.savePersonalityTestResult = async (req, res) => {

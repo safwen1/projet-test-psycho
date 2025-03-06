@@ -8,6 +8,8 @@ import { personalityTestQuestion as originalQuestions } from "../../constants/in
 import { useUserContext } from "../../context/userContext.jsx";
 import styleSensei from '../../images/style-sensei.png';
 import loaderSensei from '../../images/loader-sensei.png';
+import useError from '../../hooks/useError';
+import api from '../../utils/api';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -28,6 +30,17 @@ const QuizContainer = styled.div`
   max-width: 600px;
   margin: 100px auto auto;
   border-radius: 12px;
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-top: 60px;
+    max-width: 90%;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    margin-top: 40px;
+  }
 `;
 
 const QuestionText = styled.div`
@@ -38,6 +51,15 @@ const QuestionText = styled.div`
   text-align: center;
   color: #333;
   position: relative;
+  
+  @media (max-width: 768px) {
+    font-size: 20px !important;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 18px !important;
+    margin-bottom: 1rem;
+  }
 `;
 
 const SenseiImage = styled.img`
@@ -58,6 +80,16 @@ const AnswersContainer = styled.div`
   gap: 1rem;
   width: 100%;
   margin-top: 50px;
+  
+  @media (max-width: 768px) {
+    margin-top: 30px;
+    gap: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-top: 20px;
+    gap: 0.6rem;
+  }
 `;
 
 const StyledButton = styled(Button)`
@@ -74,6 +106,11 @@ const StyledButton = styled(Button)`
   &:hover {
     background-color: #919191 !important;
     color: #000 !important;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.6rem;
+    font-size: 14px !important;
   }
 `;
 
@@ -116,6 +153,20 @@ const StyledRangeInput = styled.input`
     background: #ff8f8f;
     cursor: pointer;
   }
+  
+  @media (max-width: 480px) {
+    height: 8px;
+    
+    &::-webkit-slider-thumb {
+      width: 16px;
+      height: 16px;
+    }
+    
+    &::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
 const RangeValueDisplay = styled.div`
@@ -132,6 +183,10 @@ const NavigationButtons = styled.div`
   justify-content: space-between;
   margin-top: 2rem;
   width: 100%;
+  
+  @media (max-width: 480px) {
+    margin-top: 1.5rem;
+  }
 `;
 
 const PreviousButton = styled(Button)`
@@ -142,6 +197,11 @@ const PreviousButton = styled(Button)`
   &:hover {
     background-color: #6c6c6c;
   }
+  
+  @media (max-width: 480px) {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
 `;
 
 const NextButton = styled(Button)`
@@ -151,6 +211,11 @@ const NextButton = styled(Button)`
   border-radius: 12px !important;
   &:hover {
     background-color: #ff8f8f;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
   }
 `;
 
@@ -186,6 +251,11 @@ const BouncingLoader = styled.div`
   display: inline-block;
   width: 100px;
   height: 100px;
+  
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
+  }
 
   img {
     width: 100%;
@@ -227,6 +297,12 @@ const AppPersonalityTest = () => {
     const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
     const navigate = useNavigate();
 
+    // Utiliser notre hook de gestion d'erreur
+    const { executeWithErrorHandling, showCriticalToast, showInfoToast, showWarningToast } = useError({
+        // Désactiver l'affichage automatique des toasts car on utilise déjà toast de react-toastify
+        showToast: false
+    });
+
     useEffect(() => {
         if (!recordID || !email || !name || !firstname) {
             navigate('/');
@@ -243,27 +319,15 @@ const AppPersonalityTest = () => {
     }, []);
 
     const checkHsObjectId = async (hsObjectId) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/checkHsObjectId/${hsObjectId}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            });
+        return await executeWithErrorHandling(async () => {
+            const response = await api.get(`/personality-test/checkHsObjectId/${hsObjectId}`);
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.success) {
+                return response.data.exists;
+            } else {
+                throw new Error("Erreur lors de la vérification de l'ID HubSpot");
             }
-            
-            const data = await response.json();
-            
-            if (data.exists) {
-                navigate('/');
-            }
-        } catch (err) {
-            console.error('Erreur lors de la vérification de hs_object_id:', err);
-        }
+        });
     };
 
     const totalQuestions = questions.length;
@@ -352,12 +416,9 @@ const AppPersonalityTest = () => {
         const userAnswers = buildUserAnswers();
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/save`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+            // Premier appel API utilisant notre utilitaire
+            const res = await executeWithErrorHandling(async () => {
+                const response = await api.post('/personality-test/save', {
                     score: {
                         color: results.colors,
                         letters: results.letters,
@@ -367,15 +428,20 @@ const AppPersonalityTest = () => {
                     name,
                     email,
                     firstname
-                }),
+                });
+                
+                if (!response.success) {
+                    throw new Error(`Erreur lors de l'envoi des résultats : ${response.error?.message || 'Erreur inconnue'}`);
+                }
+                
+                return response.data;
             });
 
-            if (res.status === 201) {
-                const data = await res.json();
-                const rapportCouleur = data.bilanColor;
-                const rapportLettre = data.bilanLetter;
-                const pdfColorBase64 = data.pdfColor;
-                const pdfLetterBase64 = data.pdfLetter;
+            if (res) {
+                const rapportCouleur = res.bilanColor;
+                const rapportLettre = res.bilanLetter;
+                const pdfColorBase64 = res.pdfColor;
+                const pdfLetterBase64 = res.pdfLetter;
 
                 const secondApiBody = {
                     results: {
@@ -409,44 +475,52 @@ const AppPersonalityTest = () => {
                     secondApiBody.project_task_id = projectTaskId;
                 }
 
-                const secondRes = await fetch("https://app.sensei-france.fr/psycho_tests/new_results", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(secondApiBody),
-                });
-
-                if (secondRes.status === 200) {
-
-                    const hubspotPayload = {
-                        couleur_situatio: results.colors,
-                        rapport_couleur_situatio: rapportCouleur,
-                        lettre_situatio: results.letters,
-                        rapport_lettre_situatio: rapportLettre,
-                        email : email,
-                        hs_object_id : recordID,
-                        item_de_motivation: results.motivationalItems,
-                        changeImpact: changeImpact,
-                    };
-
-                    await fetch(`${import.meta.env.VITE_API_URL}/personality-test/hubspot`, {
+                // Deuxième appel API avec notre gestionnaire d'erreur
+                const secondRes = await executeWithErrorHandling(async () => {
+                    const response = await fetch("https://app.sensei-france.fr/psycho_tests/new_results", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(hubspotPayload),
+                        body: JSON.stringify(secondApiBody),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erreur lors de l'envoi des résultats au deuxième serveur : ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    return await response.json();
+                });
+
+                if (secondRes) {
+                    // Troisième appel API avec notre gestionnaire d'erreur
+                    await executeWithErrorHandling(async () => {
+                        const hubspotPayload = {
+                            couleur_situatio: results.colors,
+                            rapport_couleur_situatio: rapportCouleur,
+                            lettre_situatio: results.letters,
+                            rapport_lettre_situatio: rapportLettre,
+                            email: email,
+                            hs_object_id: recordID,
+                            item_de_motivation: results.motivationalItems,
+                            changeImpact: changeImpact,
+                        };
+
+                        const response = await api.post('/personality-test/hubspot', hubspotPayload);
+                        
+                        if (!response.success) {
+                            throw new Error(`Erreur lors de l'envoi des données à HubSpot : ${response.error?.message || 'Erreur inconnue'}`);
+                        }
+                        
+                        return response.data;
                     });
 
                     toast.success("Résultats enregistrés avec succès !");
                     navigate("/mbti/results", { state: { data: { userAnswers, results, randomNumber } } });
-                } else {
-                    toast.error(`Erreur lors de l'envoi des résultats au deuxième serveur : ${secondRes.status} - ${secondRes.statusText}`);
                 }
-            } else {
-                toast.error(`Erreur lors de l'envoi des résultats au premier serveur : ${res.status} - ${res.statusText}`);
             }
         } catch (error) {
+            // Afficher l'erreur avec toast.error puisque c'est déjà utilisé dans le projet
             toast.error(`Une erreur s'est produite lors de la soumission : ${error.message}`);
             console.error("An error occurred while submitting the response:", error);
         } finally {
