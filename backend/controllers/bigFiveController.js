@@ -1,5 +1,6 @@
 const BigFiveResult = require('../models/BigFiveResult');
 const grokService = require('../services/grokService');
+const openaiService = require('../services/openaiService');
 
 // Soumettre un nouveau test Big Five
 exports.submitTest = async (req, res) => {
@@ -17,7 +18,21 @@ exports.submitTest = async (req, res) => {
       }
     });
 
-    // Appel à l'API Grok3 pour analyse avancée
+    // Solution 1: Appel à l'API OpenAI pour analyse avancée (utilisée actuellement)
+    const aiAnalysis = await openaiService.analyzeBigFiveResponses({
+      scores: scores,
+      responses: responses
+    });
+
+    // Ajouter l'analyse OpenAI au résultat si disponible
+    if (aiAnalysis) {
+      result.result.iaAnalysis = aiAnalysis;
+      console.log('Analyse OpenAI ajoutée au résultat');
+    } else {
+      console.warn('Aucune analyse OpenAI disponible - vérifiez la configuration de l\'API');
+    }
+
+    /* Solution 2: Appel à l'API Grok pour analyse avancée (commentée)
     const grokAnalysis = await grokService.analyzeBigFiveResponses({
       scores: scores,
       responses: responses
@@ -26,7 +41,7 @@ exports.submitTest = async (req, res) => {
     // Ajouter l'analyse Grok au résultat si disponible
     if (grokAnalysis && !grokAnalysis.error) {
       // Stocker uniquement l'analyse textuelle, sans le modèle et l'usage
-      result.result.grokAnalysis = grokAnalysis.analysis;
+      result.result.iaAnalysis = grokAnalysis.analysis;
       console.log('Analyse Grok ajoutée au résultat');
     } else if (grokAnalysis && grokAnalysis.error) {
       console.error('Erreur lors de l\'analyse Grok:', grokAnalysis.message);
@@ -34,6 +49,7 @@ exports.submitTest = async (req, res) => {
     } else {
       console.warn('Aucune analyse Grok disponible - vérifiez la configuration de l\'API');
     }
+    */
 
     // Sauvegarder le résultat
     await result.save();
@@ -44,7 +60,7 @@ exports.submitTest = async (req, res) => {
       result: {
         scores: result.result.scores,
         userAnswers: Object.fromEntries(result.result.userAnswers),
-        grokAnalysis: result.result.grokAnalysis || null
+        iaAnalysis: result.result.iaAnalysis || null
       },
       duration: result.metadata.duration
     });
