@@ -59,7 +59,7 @@ exports.submitTest = async (req, res) => {
       success: true,
       result: {
         scores: result.result.scores,
-        userAnswers: Object.fromEntries(result.result.userAnswers),
+        userAnswers: result.result.userAnswers,
         iaAnalysis: result.result.iaAnalysis || null
       },
       duration: result.metadata.duration
