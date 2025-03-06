@@ -44,7 +44,7 @@ describe('OpenAI Service', () => {
               }
             }
           ],
-          model: 'gpt-4o',
+          model: 'o3-mini',
           usage: { total_tokens: 500 }
         }
       };
@@ -61,11 +61,13 @@ describe('OpenAI Service', () => {
       expect(openaiService.axiosInstance.post).toHaveBeenCalledWith(
         expect.stringContaining('/chat/completions'),
         expect.objectContaining({
-          model: 'gpt-4o',
+          model: 'o3-mini',
           messages: expect.arrayContaining([
             expect.objectContaining({ role: 'system' }),
             expect.objectContaining({ role: 'user' })
-          ])
+          ]),
+          max_completion_tokens: 500,
+          reasoning_effort: 'medium'
         }),
         expect.any(Object)
       );
@@ -161,7 +163,7 @@ describe('OpenAI Service', () => {
               }
             }
           ],
-          model: 'gpt-4o',
+          model: 'o3-mini',
           usage: { total_tokens: 500 }
         }
       };
@@ -178,11 +180,13 @@ describe('OpenAI Service', () => {
       expect(openaiService.axiosInstance.post).toHaveBeenCalledWith(
         expect.stringContaining('/chat/completions'),
         expect.objectContaining({
-          model: 'gpt-4o',
+          model: 'o3-mini',
           messages: expect.arrayContaining([
             expect.objectContaining({ role: 'system' }),
             expect.objectContaining({ role: 'user' })
-          ])
+          ]),
+          max_completion_tokens: 500,
+          reasoning_effort: 'medium'
         }),
         expect.any(Object)
       );
