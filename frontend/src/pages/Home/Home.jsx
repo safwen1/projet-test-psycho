@@ -133,29 +133,87 @@ const Button = styled.button`
 
 const Home = () => {
     const navigate = useNavigate();
-    const { recordID, email, name, firstname } = useUserContext();
+    const { recordID, email, name, firstname, refreshFromLocalStorage, clearUserData } = useUserContext();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    
+    // Vérification du localStorage et des valeurs du contexte
+    useEffect(() => {    
+        console.log('Valeurs du contexte:', { recordID, email, name, firstname });
+        
+        // Si les données ne sont pas disponibles dans le contexte mais sont dans le localStorage,
+        // forcer la récupération depuis le localStorage
+        if ((!recordID || !email || !name || !firstname) && 
+            (localStorage.getItem('hs_object_id') || localStorage.getItem('email') || 
+             localStorage.getItem('lastname') || localStorage.getItem('firstname'))) {
+            console.log('Tentative de récupération des données depuis le localStorage...');
+            const refreshedData = refreshFromLocalStorage();
+            console.log('Données récupérées:', refreshedData);
+        }
+    }, [recordID, email, name, firstname, refreshFromLocalStorage]);
     
     // Utilisation de notre hook de gestion d'erreur
     const { executeWithErrorHandling, showWarningToast } = useError();
 
     useEffect(() => {
-        if (!recordID || !email || !name || !firstname) {
-            setErrorMessage("Vous n'avez pas toutes les informations requises pour commencer le test, veuillez vous rapprocher de votre consultant");
-            showWarningToast("Vous n'avez pas toutes les informations requises pour commencer le test, veuillez vous rapprocher de votre consultant");
+        // Vérifier si les données utilisateur sont disponibles
+        const missingData = [];
+        
+        if (!recordID) missingData.push("ID d'enregistrement");
+        if (!email) missingData.push("email");
+        if (!name) missingData.push("nom");
+        if (!firstname) missingData.push("prénom");
+        
+        if (missingData.length > 0) {
+            const message = `Vous n'avez pas toutes les informations requises pour commencer le test (${missingData.join(', ')} manquant). Veuillez vous rapprocher de votre consultant.`;
+            setErrorMessage(message);
+            showWarningToast(message);
             setIsButtonDisabled(true);
         } else {
             const checkHsObjectId = async (hsObjectId) => {
                 return executeWithErrorHandling(async () => {
                     try {
+                        console.log('Vérification du hs_object_id:', hsObjectId);
+                        
+                        // Vérifier que hsObjectId est bien un nombre
+                        if (!hsObjectId || isNaN(parseInt(hsObjectId))) {
+                            console.error('hs_object_id invalide:', hsObjectId);
+                            showWarningToast("L'identifiant d'enregistrement est invalide. Veuillez vous rapprocher de votre consultant.");
+                            return null;
+                        }
+                        
                         // Utilisation de notre utilitaire API au lieu du fetch direct
-                        const response = await api.get(`/personality-test/checkHsObjectId/${hsObjectId}`);
-                        if (response.success) {
-                            return response.data.exists;
-                        } 
-                        return null;
+                        const response = await api.get(`/personality-test/checkHsObjectId/${hsObjectId}`, {}, {
+                            showErrorToast: true
+                        });
+                        
+                        console.log('Réponse de l\'API:', response);
+                        
+                        // Vérifier si la réponse est un succès
+                        if (!response.success) {
+                            console.error('Erreur dans la réponse API:', response.error);
+                            return null;
+                        }
+                        
+                        // Extraire la valeur de exists selon la structure de la réponse
+                        let exists = null;
+                        
+                        if (response.data && typeof response.data.exists === 'boolean') {
+                            // Structure: { success: true, data: { exists: boolean, ... } }
+                            console.log('Valeur de exists (structure directe):', response.data.exists);
+                            exists = response.data.exists;
+                        } else if (response.data && response.data.data && typeof response.data.data.exists === 'boolean') {
+                            // Structure: { success: true, data: { data: { exists: boolean, ... } } }
+                            console.log('Valeur de exists (structure imbriquée):', response.data.data.exists);
+                            exists = response.data.data.exists;
+                        } else {
+                            // Structure inattendue
+                            console.error('Structure de réponse inattendue:', response);
+                            return null;
+                        }
+                        
+                        return exists;
                     } catch (err) {
                         console.error('Erreur lors de la vérification de hs_object_id:', err);
                         return null; // Indique une erreur
@@ -164,23 +222,45 @@ const Home = () => {
             };
 
             checkHsObjectId(recordID).then(exists => {
+                console.log('Résultat de la vérification:', exists);
+                
                 if (exists === true) {
                     const message = "Impossible de faire le test deux fois pour le même utilisateur";
                     setErrorMessage(message);
                     showWarningToast(message);
                     setIsButtonDisabled(true);
                 } else if (exists === false) {
+                    // L'utilisateur peut passer le test
                     setErrorMessage("");
                     setIsButtonDisabled(false);
                 } else {
+                    // Si exists est null, c'est qu'il y a eu une erreur
                     const message = "Une erreur est survenue lors de la vérification des informations. Veuillez réessayer.";
                     setErrorMessage(message);
                     showWarningToast(message);
+                    
+                    // Afficher des informations de débogage
+                    console.error('Erreur lors de la vérification du hs_object_id. Valeur de recordID:', recordID);
+                    console.log('Contenu du localStorage:', {
+                        hs_object_id: localStorage.getItem('hs_object_id'),
+                        user_id: localStorage.getItem('user_id')
+                    });
+                    
+                    // Tenter de récupérer les données du localStorage
+                    const refreshedData = refreshFromLocalStorage();
+                    console.log('Tentative de récupération des données:', refreshedData);
+                    
                     setIsButtonDisabled(true);
                 }
+            }).catch(error => {
+                console.error('Erreur non gérée lors de la vérification:', error);
+                const message = "Une erreur inattendue est survenue. Veuillez réessayer ultérieurement.";
+                setErrorMessage(message);
+                showWarningToast(message);
+                setIsButtonDisabled(true);
             });
         }
-    }, [recordID, email, name, firstname, showWarningToast, executeWithErrorHandling]);
+    }, [recordID, email, name, firstname, showWarningToast, executeWithErrorHandling, refreshFromLocalStorage]);
 
     const pageStyle = {
         backgroundColor: '#fdf6f1',
@@ -198,6 +278,29 @@ const Home = () => {
             // Utiliser notre système pour afficher une erreur quand le bouton est cliqué alors qu'il est désactivé
             showWarningToast(errorMessage || "Vous ne pouvez pas accéder au test pour le moment.");
         }
+    };
+
+    // Fonction pour forcer la récupération des données depuis le localStorage
+    const handleRefreshData = () => {
+        const refreshedData = refreshFromLocalStorage();
+        console.log('Données récupérées manuellement:', refreshedData);
+        showWarningToast("Tentative de récupération des données depuis le localStorage effectuée.");
+        
+        // Recharger la page après un court délai
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    };
+    
+    // Fonction pour réinitialiser les données
+    const handleResetData = () => {
+        clearUserData();
+        showWarningToast("Toutes les données ont été réinitialisées.");
+        
+        // Recharger la page après un court délai
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
     };
 
     return (

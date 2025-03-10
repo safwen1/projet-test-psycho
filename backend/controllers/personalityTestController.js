@@ -327,32 +327,56 @@ exports.savePersonalityTestResult = async (req, res) => {
     }
 };
 
-exports.checkHsObjectId = async (req, res) => {
+exports.checkHsObjectId = async (req, res, next) => {
     try {
         const { hs_object_id } = req.params;
+        
+        logger.info('Vérification du hs_object_id', { hs_object_id });
 
         if (!hs_object_id) {
-            return res.status(400).json({ error: 'hs_object_id manquant.' });
+            logger.warn('hs_object_id manquant', { route: 'checkHsObjectId' });
+            throw new ValidationError('hs_object_id manquant.');
         }
 
         const recordID = parseInt(hs_object_id, 10);
         if (isNaN(recordID)) {
-            return res.status(400).json({ error: 'hs_object_id doit être un entier.' });
+            logger.warn('hs_object_id invalide', { hs_object_id, route: 'checkHsObjectId' });
+            throw new ValidationError('hs_object_id doit être un entier.');
         }
 
-        const result = await ResultsPersonalityTest.findOne({ hs_object_id: recordID });
+        try {
+            const result = await ResultsPersonalityTest.findOne({ hs_object_id: recordID });
+            
+            const exists = result !== null;
+            
+            logger.info('Résultat de la vérification', { 
+                hs_object_id, 
+                exists,
+                route: 'checkHsObjectId'
+            });
 
-        return res.status(200).json({
-            exists: result ? true : false,
-            data: result || null,
-            message: result ? undefined : 'hs_object_id non trouvé.'
-        });
-
-    } catch (err) {
-        console.error("Error checking hs_object_id:", err);
-        return res.status(500).json({ 
-            error: "Erreur lors de la vérification du hs_object_id", 
-            details: err.message 
-        });
+            return res.status(200).json({
+                success: true,
+                data: {
+                    exists,
+                    message: exists 
+                        ? 'Un test existe déjà pour cet utilisateur.' 
+                        : 'Aucun test trouvé pour cet utilisateur.'
+                }
+            });
+        } catch (dbError) {
+            logger.error('Erreur lors de la recherche dans la base de données', {
+                hs_object_id,
+                error: dbError.message,
+                route: 'checkHsObjectId'
+            });
+            
+            throw new ExternalServiceError('Erreur lors de la vérification dans la base de données.', {
+                originalError: dbError.message
+            });
+        }
+    } catch (error) {
+        // Passer l'erreur au middleware de gestion d'erreur
+        next(error);
     }
 };

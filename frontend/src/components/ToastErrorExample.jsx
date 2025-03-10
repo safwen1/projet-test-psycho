@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../utils/api';
 import useError from '../hooks/useError';
-import { ErrorTypes } from '../utils/errorToast';
+import { ErrorTypes } from '../utils/errorToast.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import errorToastAdapter from './errorToast';
+import errorToastAdapter from './errorToast.jsx';
 
 // Configuration de l'URL de base pour les appels API
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';

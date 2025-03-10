@@ -1,3 +1,4 @@
+import React from 'react';
 import { toast } from 'react-toastify'; // Remplacez par votre bibliothèque de toast si différente
 
 // Types d'erreurs pour les styles des toasts
@@ -12,7 +13,7 @@ export const ErrorTypes = {
  * Ajustez selon vos préférences ou selon la bibliothèque de toast que vous utilisez
  */
 const toastConfig = {
-  position: toast.POSITION.TOP_RIGHT,
+  position: 'top-right',
   autoClose: 5000,
   hideProgressBar: false,
   closeOnClick: true,

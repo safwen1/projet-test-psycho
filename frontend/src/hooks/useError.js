@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import errorToastAdapter, { ErrorTypes } from '../utils/errorToast';
+import errorToastAdapter, { ErrorTypes } from '../utils/errorToast.jsx';
 
 /**
  * Hook personnalisé pour gérer les erreurs dans les composants React avec Toaster
