@@ -437,9 +437,27 @@ const AppMwmsTest = () => {
   const [timerExpanded, setTimerExpanded] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const speechSynthesisRef = useRef(null);
+  const [isNavigatingToResults, setIsNavigatingToResults] = useState(false);
 
-  // Utiliser le hook pour empêcher la navigation
-  usePreventNavigation(true, "Êtes-vous sûr de vouloir quitter ? Vos réponses seront perdues.");
+  // Modifier le hook usePreventNavigation pour prendre en compte la redirection vers les résultats
+  usePreventNavigation(
+    !isNavigatingToResults, 
+    "Êtes-vous sûr de vouloir quitter ? Vos réponses seront perdues."
+  );
+
+  // Modifier l'événement beforeunload
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (!isNavigatingToResults) {
+        event.preventDefault();
+        event.returnValue = "Êtes-vous sûr de vouloir quitter ? Vos réponses seront perdues.";
+        return event.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isNavigatingToResults]);
 
   // Gérer le timer
   useEffect(() => {
@@ -448,18 +466,6 @@ const AppMwmsTest = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
-
-  // Gérer l'événement beforeunload
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = "Êtes-vous sûr de vouloir quitter ? Vos réponses seront perdues.";
-      return event.returnValue;
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
   // Formater le temps
@@ -550,7 +556,7 @@ const AppMwmsTest = () => {
     }
   };
 
-  // Gérer la soumission du test
+  // Modifier la fonction handleSubmit pour désactiver les alertes avant la redirection
   const handleSubmit = async () => {
     if (isSubmitting) return;
     
@@ -560,7 +566,7 @@ const AppMwmsTest = () => {
       const scores = calculateScores();
       const duration = formatTime(seconds);
       
-      const response = await axios.post('/api/mwms/submit', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/mwms/submit`, {
         responses: answers,
         scores,
         duration,
@@ -568,6 +574,7 @@ const AppMwmsTest = () => {
       });
       
       if (response.data.success) {
+        setIsNavigatingToResults(true); // Désactiver les alertes avant la redirection
         navigate('/mwms/results', { 
           state: { 
             result: response.data.result,
