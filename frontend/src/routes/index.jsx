@@ -52,6 +52,19 @@ const ResultBigFive = lazyRoute('pages/BigFive/ResultBigFive', {
   fallback: 'Chargement des résultats du test Big Five...'
 });
 
+// Routes du test MWMS avec chargement paresseux
+const IntroMwms = lazyRoute('pages/MWMS/IntroMwms', { 
+  fallback: 'Chargement de l\'introduction du test MWMS...' 
+});
+
+const AppMwmsTest = lazyRoute('pages/MWMS/AppMwmsTest', { 
+  fallback: 'Chargement du test MWMS...'
+});
+
+const ResultMwms = lazyRoute('pages/MWMS/ResultMwms', { 
+  fallback: 'Chargement des résultats du test MWMS...'
+});
+
 // Page de résultat générique
 const Resultat = lazyRoute('pages/Resultat/Resultat', { 
   fallback: 'Chargement de la page de résultat...',
@@ -256,6 +269,38 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <ResultBigFive />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Routes pour le test MWMS */}
+        <Route 
+          path="/mwms" 
+          element={
+            loadingErrors['/mwms'] ? 
+              <FallbackComponent 
+                title="Erreur de chargement de l'introduction MWMS" 
+                message="Le composant n'a pas pu être chargé. Cela peut être dû à un problème technique temporaire." 
+                onRetry={() => retryLoading('/mwms')} 
+              /> : 
+              <ProtectedRoute>
+                <IntroMwms />
+              </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/mwms/test" 
+          element={
+            <ProtectedRoute>
+              <AppMwmsTest />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/mwms/results" 
+          element={
+            <ProtectedRoute>
+              <ResultMwms />
             </ProtectedRoute>
           } 
         />

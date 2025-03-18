@@ -171,15 +171,14 @@ const tests = [
   },
   {
     id: 'motivation',
-    title: 'Test de Motivation',
-    description: 'Explorez vos sources de motivation profondes et découvrez ce qui vous pousse réellement à agir. Ce test analysera vos motivations intrinsèques et extrinsèques pour vous aider à mieux comprendre vos moteurs personnels.',
+    title: 'Test de Motivation au Travail',
+    description: 'Explorez vos sources de motivation professionnelle et découvrez ce qui vous pousse réellement à agir. Ce test analysera vos motivations autonomes, introjectées et externes pour vous aider à mieux comprendre vos moteurs personnels.',
     icon: TestIcons.emotional,
-    path: null,
-    duration: '15-20 minutes',
-    questionCount: 60,
+    path: '/mwms',
+    duration: '10-15 minutes',
+    questionCount: 13,
     accentColor: '#33A474',
-    category: 'emotional',
-    comingSoon: true
+    category: 'emotional'
   }
 ];
 

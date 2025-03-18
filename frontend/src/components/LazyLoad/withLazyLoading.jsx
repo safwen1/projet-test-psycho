@@ -123,14 +123,24 @@ export const withLazyLoading = (importComponent, options = {}) => {
  * @param {string} componentPath - Chemin vers le composant à charger
  * @param {Object} options - Options pour le chargement paresseux
  * @returns {React.ComponentType} - Composant de route avec chargement paresseux
+ * 
+ * @deprecated Utiliser createLazyComponent à la place pour une meilleure compatibilité avec Vite
  */
 export const lazyRoute = (componentPath, options = {}) => {
   console.log(`Configuration du chargement paresseux pour: ${componentPath}`);
+  console.warn(`
+    ⚠️ DÉPRÉCIÉ: La fonction lazyRoute est dépréciée et peut causer des avertissements avec Vite.
+    Utilisez plutôt createLazyComponent pour une meilleure compatibilité.
+    Exemple: const LazyComponent = createLazyComponent('ComponentName', () => import('./path/to/Component.jsx'));
+  `);
   
   return withLazyLoading(
     () => {
       console.log(`Chargement du composant: ${componentPath}`);
-      return import(`../../${componentPath}`)
+      
+      // Utilisation de @vite-ignore pour supprimer l'avertissement
+      // Note: nous avons également configuré Vite pour ignorer ces avertissements
+      return import(/* @vite-ignore */ `../../${componentPath}`)
         .then(module => {
           console.log(`Composant chargé avec succès: ${componentPath}`);
           return module;
@@ -142,9 +152,99 @@ export const lazyRoute = (componentPath, options = {}) => {
     },
     {
       fallback: options.fallback || `Chargement de la page...`,
+      timeout: options.timeout || 15000,
       ...options
     }
   );
 };
+
+/**
+ * Fonction utilitaire pour créer facilement des composants avec chargement paresseux
+ * Cette fonction est plus flexible que lazyRoute car elle permet de spécifier un chemin absolu
+ * @param {string} componentPath - Chemin vers le composant à charger (relatif ou absolu)
+ * @param {Object} options - Options pour le chargement paresseux
+ * @returns {React.ComponentType} - Composant avec chargement paresseux
+ * 
+ * @deprecated Utiliser createLazyComponent à la place pour une meilleure compatibilité avec Vite
+ */
+export const lazyComponent = (componentPath, options = {}) => {
+  console.warn(`
+    ⚠️ DÉPRÉCIÉ: La fonction lazyComponent est dépréciée et peut causer des avertissements avec Vite.
+    Utilisez plutôt createLazyComponent pour une meilleure compatibilité.
+    Exemple: const LazyComponent = createLazyComponent('ComponentName', () => import('./path/to/Component.jsx'));
+  `);
+  
+  const isAbsolutePath = componentPath.startsWith('/') || 
+                         componentPath.startsWith('./') || 
+                         componentPath.startsWith('../');
+  
+  return withLazyLoading(
+    () => {
+      console.log(`Chargement du composant: ${componentPath}`);
+      
+      // Si le chemin est absolu, on l'utilise tel quel, sinon on ajoute le préfixe ../../
+      const importPath = isAbsolutePath 
+        ? componentPath 
+        : `../../${componentPath}`;
+      
+      // Utilisation de @vite-ignore pour supprimer l'avertissement
+      return import(/* @vite-ignore */ importPath)
+        .then(module => {
+          console.log(`Composant chargé avec succès: ${componentPath}`);
+          return module;
+        })
+        .catch(error => {
+          console.error(`Erreur de chargement pour ${componentPath}:`, error);
+          throw error;
+        });
+    },
+    {
+      fallback: options.fallback || `Chargement du composant...`,
+      ...options
+    }
+  );
+};
+
+/**
+ * Crée un composant avec chargement paresseux à partir d'un chemin de composant
+ * Cette fonction est une alternative à lazyComponent qui utilise une approche plus compatible avec Vite
+ * @param {string} componentName - Nom du composant à charger (utilisé pour la journalisation)
+ * @param {Function} importFn - Fonction d'importation du composant (doit retourner une promesse)
+ * @param {Object} options - Options pour le chargement paresseux
+ * @returns {React.ComponentType} - Composant avec chargement paresseux
+ */
+export const createLazyComponent = (componentName, importFn, options = {}) => {
+  return withLazyLoading(
+    () => {
+      console.log(`Chargement du composant: ${componentName}`);
+      return importFn()
+        .then(module => {
+          console.log(`Composant chargé avec succès: ${componentName}`);
+          return module;
+        })
+        .catch(error => {
+          console.error(`Erreur de chargement pour ${componentName}:`, error);
+          throw error;
+        });
+    },
+    {
+      fallback: options.fallback || `Chargement du composant...`,
+      ...options
+    }
+  );
+};
+
+// Exemples d'utilisation de createLazyComponent:
+// 
+// Pour les pages:
+// const LazyHome = createLazyComponent('Home', () => import('../../pages/Home/Home.jsx'));
+// const LazyAbout = createLazyComponent('About', () => import('../../pages/About/About.jsx'));
+//
+// Pour les composants:
+// const LazyDataTable = createLazyComponent('DataTable', () => import('../../components/DataTable/DataTable.jsx'));
+//
+// Utilisation dans les routes:
+// <Route path="/" element={<LazyHome />} />
+// <Route path="/about" element={<LazyAbout />} />
 
 export default withLazyLoading; 
